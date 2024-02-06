@@ -1,0 +1,13 @@
+name = "simonask"
+description = "Fork of anemone"
+license = "MIT"
+homepage = "https://github.com/simonask/simonask.github.io/themes/simonask"
+min_version = "0.4.0"
+demo = "https://simonask.github.io"
+
+[extra]
+
+
+[author]
+name = "Simon Ask Ulsnes"
+homepage = "https://simonask.github.io"
