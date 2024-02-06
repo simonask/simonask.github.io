@@ -1,0 +1,40 @@
+# The URL the site will be built for
+base_url = "https://simonask.github.io"
+theme = "simonask"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+highlight_theme = "one-dark"
+
+[extra]
+# Put all your custom variables here
+default_theme = "dark"
+# accent_color = "pink"
+# background_color = "dark"
+title = "rådden blog"
+author = "Simon Ask Ulsnes"
+copyright = "Simon Ask Ulsnes"
+toc = true
+display_author = true
+
+header_nav = [
+    { url = "/", name_en = "blog" },
+    { url = "/about", name_en = "about" },
+    { url = "https://github.com/simonask", name_en = "github" },
+]
+
+[[extra.menu_items]]
+name = "github"
+url = "https://github.com/simonask"
+newtab = true
+
+[[taxonomies]]
+name = "tags"
