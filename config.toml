@@ -17,6 +17,7 @@ highlight_theme = "one-dark"
 [extra]
 # Put all your custom variables here
 default_theme = "dark"
+default_language = "en"
 # accent_color = "pink"
 # background_color = "dark"
 title = "rådden blog"

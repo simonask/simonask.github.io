@@ -1,9 +1,9 @@
-:root,
 :root.light {
   --bgColor: #EEEEEE;
   --fgColor: #41474E;
-  --primary: #9d68d2;
-  --secondary: #0abb4e;
+  --primary: #ee6890;
+  --secondary: #67ba49;
+  --link: #27ade6;
   --headColor: #;
   --linkColor: #5690AF;
   --hovColor: #22453F;
@@ -13,7 +13,7 @@
   --dimRed: #623039;
   --orange: #e08f67;
   --dimOrange: #926048;
-  --yellow: #FFFAE1;
+  --yellow: #e08f67;
   --dimYellow: #D5C5A1;
   --green: #56AFA0;
   --dimGreen: #3E615C;
@@ -25,11 +25,13 @@
   --dimGrey: #88858b;
 }
 
+:root,
 :root.dark {
   --bgColor: #222529;
   --fgColor: #D6D6D6;
-  --primary: #9d68d2;
-  --secondary: #0abb4e;
+  --primary: #ee6890;
+  --secondary: #96dc76;
+  --link: #27ade6;
   --headColor: #;
   --linkColor: #DBD5BC;
   --hovColor: #E2AEA2;
@@ -39,7 +41,7 @@
   --dimRed: #684249;
   --orange: #E2AEA2;
   --dimOrange: #704941;
-  --yellow: #DBD5BC;
+  --yellow: #fced65;
   --dimYellow: #6F6847;
   --green: #78B6AD;
   --dimGreen: #3E615C;
@@ -105,6 +107,7 @@ h6,
 h7 {
   font-family: "JetBrains Mono", monospace;
   font-weight: 400;
+  color: var(--secondary);
 }
 
 h1::before {
@@ -150,15 +153,12 @@ address[rel="author"] {
 
 a {
   text-decoration: none;
-  padding: 0 .2rem 0 .2rem;
-  border-radius: .3rem;
-  color: var(--secondary);
+  color: var(--link);
 }
 
 a:focus,
 a:hover {
-  background-color: var(--secondary);
-  color: var(--bgColor)
+  text-decoration: underline;
 }
 
 ul {
@@ -172,14 +172,12 @@ li {
 }
 
 ul li::marker {
-  content: '» ';
+  content: '»  ';
   color: var(--primary)
 }
 
-ul li:hover::marker {
-  content: '# ';
-  font-weight: 700;
-  color: var(--linkColor)
+ol li::marker {
+  color: var(--primary);
 }
 
 blockquote {
@@ -210,7 +208,7 @@ img {
 }
 
 pre {
-  border: 1px solid var(--primary);
+  /* border: 1px solid var(--primary); */
   padding: 1rem;
   overflow-x: auto;
   font-style: monospace;
@@ -233,13 +231,20 @@ pre[data-linenos] code table tr td:nth-of-type(1) {
   width: 4rem;
 }
 
+code {
+  font-family: "JetBrains Mono", monospace;
+}
+
 p code,
 li code,
 div code {
   padding: 0 .2rem 0 .2rem;
   border-radius: .3rem;
-  color: var(--dimGrey);
-  font-family: "JetBrains Mono", monospace;
+  color: var(--secondary);
+}
+
+a code {
+  color: var(--link);
 }
 
 pre code {
@@ -247,7 +252,6 @@ pre code {
   border-radius: 0;
   color: inherit;
   background-color: inherit;
-  font-family: "JetBrains Mono", monospace;
 }
 
 iframe {
@@ -343,6 +347,11 @@ textarea {
   align-items: center;
   align-content: flex-end;
   font-family: "JetBrains Mono", monospace;
+}
+
+nav.navBar a {
+  margin-right: 1rem;
+  color: var(--secondary);
 }
 
 .themeButton {

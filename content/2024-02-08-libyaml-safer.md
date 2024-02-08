@@ -432,6 +432,15 @@ suite](https://github.com/yaml/yaml-test-suite). Having this comprehensive test
 suite was an absolute necessity when porting to safe Rust, and I would not have
 dared to embark on this endeavor without it.
 
+For every change to the code, I was able to run the full test suite and verify
+that everything was as it should be. And even though the code was ported with a
+true dedication to matching the original semantics, and even the general "shape"
+of the API, many things could go wrong - particularly around flow control and
+errors. See, the use of `goto`s is emulated by c2rust using complicated
+loop/match/break constructs, all of which went away completely, replaced by
+Rust's "try" operator, `?`. Even trivial changes are an opportunity for bugs to
+sneak in, and even moreso when there are hundreds.
+
 Even though it is much easier to write correct code in safe Rust than in C,
 logic bugs are obviously just as possible, particularly when performing very
 large scale refactorings, which is essentially what this is.
