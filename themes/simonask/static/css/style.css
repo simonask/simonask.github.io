@@ -48,7 +48,7 @@
   --purple: #CEA7DE;
   --dimPurple: #5E406A;
   --grey: #CBCDCD;
-  --dimGrey: #ababab;
+  --dimGrey: #88858b;
 }
 
 ::-moz-selection {
@@ -72,7 +72,7 @@ html {
 body {
   font-family: "Open Sans";
   font-size: 10pt;
-  line-height: 1.35;
+  line-height: 1.5;
   max-width: 54rem;
   margin: auto;
   overflow-wrap: break-word;
@@ -219,6 +219,20 @@ pre {
   word-break: break-word;
 }
 
+pre table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+pre table td {
+  padding: 0;
+  border: none;
+}
+
+pre[data-linenos] code table tr td:nth-of-type(1) {
+  width: 4rem;
+}
+
 p code,
 li code,
 div code {
@@ -248,25 +262,29 @@ table {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 1rem;
-  line-height: 1.1
-}
-
-thead th:first-child {
-  width: 20%
 }
 
 th {
-  font-weight: 400
+  font-weight: 600;
+  border-bottom: solid 2px var(--dimGrey);
 }
 
 td,
 th {
   padding: .5rem;
-  border: dashed .1rem var(--primary)
+  /* border: dashed .1rem var(--primary) */
+}
+
+tr:not(:last-child) td {
+  border-bottom: solid 1px var(--dimGrey);
+}
+
+pre table tr:not(:last-child) td {
+  border-bottom: none;
 }
 
 footer {
-  font-size: 1.4rem;
+  font-size: 0.7rem;
   clear: both;
   color: var(--footColor)
 }

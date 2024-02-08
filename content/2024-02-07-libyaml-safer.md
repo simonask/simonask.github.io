@@ -34,6 +34,30 @@ foolishly, in a flash of manic youthful optimism - decided to embark on the
 journey of porting [unsafe-libyaml] to safe Rust, function by function, line by
 line. It took a little over a week.
 
+The [result is available on GitHub](https://github.com/simonask/libyaml-safer).
+
+## What are we dealing with?
+
+libyaml consists of two main components:
+
+* YAML parser, which consumes a stream of bytes and produces "events"
+  representing the structure of the document.
+* YAML emitter, which consumes a stream of events and produces a stream of
+  bytes.
+
+The byte streams, both input and output, can be in different encodings, one of
+UTF-8, UTF-16 little-endian, or UTF-16 big-endian. Most, but not all, Unicode
+code points are supported - notably, control characters are not supported.
+
+Events in libyaml are a linear representation of the logical structure of a
+document, so higher level than parser tokens, but lower level than mappings,
+sequences, and scalar values. Events are things like "begin mapping", "begin
+mapping key", "scalar", etc.
+
+Libyaml also contains a high-level abstraction, `yaml_document_t`, which can
+represent any YAML document. The parser can load a stream of events into a
+document, and the emitter can produce a stream of events from a document.
+
 ## Eldritch Horrors, or just C
 
 [libyaml] is squarely a C library, and reading it from the point of view of a
@@ -82,26 +106,175 @@ over full UTF-8 codepoints within the string. The only way to determine which
 abstraction it is currently emulating is to look at the context.
 
 Thankfully - libyaml being a well-structured C project - there are plenty of
-context clues. When the `STRING_DEL()` macro is being used, the caller hopefully
-assumes ownership. When the `STRING_ASSIGN()` macro is being used, the string is
-usually being borrowed and/or used as an iterator.
+context clues. When the `STRING_DEL()` macro is being used, the caller assumes
+ownership. When the `STRING_ASSIGN()` macro is being used, the string is being
+borrowed and/or used as an iterator.
 
 The interesting takeaway is this: For all of the different roles that
 `yaml_string_t` takes on, it turns out there is an abstraction in the Rust
-standard library that matches the use case precisely. I did not encounter a
-single case in the libyaml source code where the use of strings did not map
-directly to one of the _several_ many ways of dealing with strings in Rust.
-Phew!
+standard library that matches each use case precisely. At all points in the
+libyaml source code where strings are used, the use case maps directly to one of
+the _several_ many ways of dealing with strings in Rust. Phew!
 
-_Joyful aside:_ There is a similar type in libyaml, called `yaml_buffer_t`, and
-it turned out to be almost very close to a `VecDeque` from the standard library.
-Hooray!
+_Joyful aside:_ There is a similar type in libyaml, called `yaml_buffer_t`. It
+is slightly more complicated than strings, because it acts essentially as a ring
+buffer, and it turned out to be almost very close to a `VecDeque` from the
+standard library. Hooray!
 
-### Error handling
+## Self-referential types - Oh my!
 
-Mercifully, C does not have exceptions. They are easily among the top 20
-mistakes committed by humanity in the latter half of the 20th century, and don't
-even come for me because I will die on this hill.
+YAML syntax can represent the same thing in multiple ways. For example,
+sequences and mappings can be represented in both "flow style" and "block
+style", and strings can be single-quoted, double-quoted, unquoted, block-quoted,
+etc.
+
+```yaml
+flow_style_mapping: { a: "Hello", b: "World" },
+block_style_mapping:
+  a: Hello
+  b: World
+flow_style_sequence: [1, 2, 3]
+block_style_sequence:
+- 1
+- 2
+- 3
+```
+
+The libyaml emitter wants to choose both nice and correct formatting for the
+output. Not just for the aesthetic, but also because some things actually
+require specific styles - for example, escape sequences are only supported in
+double-quoted strings, and some Unicode characters need to be represented as
+escape sequences.
+
+The emitter works by pushing "events" to a queue. Events are things like "begin
+mapping", "begin mapping key", "begin mapping value", "end mapping", and so on,
+and the emitter writes to the output when it has enough information to determine
+the appropriate style.
+
+This is implemented in libyaml as an "analysis" step that happens for each event
+before the corresponding YAML is written to the output.
+
+```c,linenos,linenostart=1700
+static int
+yaml_emitter_analyze_event(yaml_emitter_t *emitter,
+        yaml_event_t *event)
+{
+    emitter->anchor_data.anchor = NULL;
+    emitter->anchor_data.anchor_length = 0;
+    emitter->tag_data.handle = NULL;
+    emitter->tag_data.handle_length = 0;
+    emitter->tag_data.suffix = NULL;
+    emitter->tag_data.suffix_length = 0;
+    emitter->scalar_data.value = NULL;
+    emitter->scalar_data.length = 0;
+
+    switch (event->type)
+    {
+        // ...
+    }
+    // ...
+}
+```
+
+The analysis step populates the `emitter->anchor_data`, `emitter->tag_data`, and
+`emitter->scalar_data` fields depending on the event type. Those fields that can
+be `NULL` are C strings, and they refer to the strings contained within the
+`event`. But the `event` comes from a queue owned by `yaml_emitter_t`. This is
+great design in the C library, because it makes the analysis step extremely
+cheap - no strings are duplicated, only "borrowed".
+
+So how do we express the analysis fields in safe Rust? Blindly porting the C
+approach to Rust would result in `yaml_emitter_t` becoming self-referential,
+since the analysis pointers would either point into the event queue or into an
+event that was just popped from the queue, making it impossible to represent
+that lifetime on `yaml_emitter_t` itself.
+
+**Key Insight:** Every time `yaml_emitter_analyze_event()` is called, it resets
+any previous analysis results. It is called exactly once per event. Aha! What if
+the results of the analysis was a return value from
+`yaml_emitter_analyze_event()`, instead of modifying fields on the emitter?
+
+```rust
+#[derive(Default)]
+struct Analysis<'a> {
+    pub anchor: Option<AnchorAnalysis<'a>>,
+    pub tag: Option<TagAnalysis<'a>>,
+    pub scalar: Option<ScalarAnalysis<'a>>,
+}
+
+struct AnchorAnalysis<'a> {
+    pub anchor: &'a str,
+    pub alias: bool,
+}
+
+struct TagAnalysis<'a> {
+    pub handle: &'a str,
+    pub suffix: &'a str,
+}
+
+struct ScalarAnalysis<'a> {
+    /// The scalar value.
+    pub value: &'a str,
+    /// Does the scalar contain line breaks?
+    pub multiline: bool,
+    /// Can the scalar be expessed in the flow plain style?
+    pub flow_plain_allowed: bool,
+    /// Can the scalar be expressed in the block plain style?
+    pub block_plain_allowed: bool,
+    /// Can the scalar be expressed in the single quoted style?
+    pub single_quoted_allowed: bool,
+    /// Can the scalar be expressed in the literal or folded styles?
+    pub block_allowed: bool,
+    /// The output style.
+    pub style: ScalarStyle,
+}
+
+fn yaml_emitter_analyze_event<'a>(
+    emitter: &yaml_emitter_t,
+    event: &'a yaml_event_t,
+) -> Analysis<'a> {
+    match event.type_ {
+        // ...
+    }
+}
+```
+
+Wonderful! Now the `Analysis<'a>` struct just needs to be passed into any
+emitter function that needs the analysis as an extra parameter. Thankfully no
+public API function on the emitter relies on analysis having happened
+previously, so threading that argument through the emitter code is fairly
+trivial, and due to lifetime annotations guaranteed bug-free, in the sense that
+it is not possible for any part of the emitter to use the analysis of one event
+during the emission of another event.
+
+On the one hand, this change is something that we're forced to do by Rust,
+because it would not be possible to make the borrow checker happy without it. On
+the other hand, the Rust compiler actually nudges us to choose a better design
+than the original.
+
+Why is this beneficial? Well, see, reading the original source code for libyaml
+was hard. Upon seeing the `anchor_data`, `tag_data`, and `scalar_data` fields of
+`yaml_emitter_t`, the first thing any reader or maintainer has to do is figure
+out how those pointers are used and when they are valid. This required a bunch
+of forensics, which would have to happen again and again everytime someone new
+looked at the code, and "someone new" also includes "future you".
+
+The original design from the C code could have been ported verbatim to Rust, but
+it would require a lot of unsafe code, which would have made it very obvious
+that some cognitive overhead was being incurred. By choosing a design that works
+in safe Rust, that cognitive overhead has been moved to a statically verified
+invariant that is plainly visible in the source code. The new signature of
+`yaml_emitter_analyze_event` plainly documents that `Analysis<'a>` contains
+references that are coming from a `yaml_event_t` with lifetime `'a`.
+
+## Error handling
+
+One of my goals with libyaml-safer was to provide near perfect error fidelity
+compared with libyaml.
+
+Mercifully, C does not have exceptions. They are easily among the top 20 of
+humanity's mistakes in the latter half of the 20th century, and don't even come
+for me because I will die on this hill.
 
 What this means is that the flow around error handling is surprisingly similar
 between well-structured C code and idiomatic Rust code. Rust has the `?`
@@ -111,30 +284,228 @@ replaced with a bespoke `Success` struct. Replacing this with [`Result`] turned
 out to be [pretty
 trivial](https://github.com/simonask/libyaml-safer/commit/dc639b92b5754f58e8e8f7979449ba6aca54c3a6).
 
-Unfortunately, the story doesn't end here. Another thing that C lacks is "RAII",
-which is just the thing where resources are automatically cleaned up when the
-variables holding the resources go out of scope. In other words, the `Drop`
-trait.
+But wait a minute... We can't just use the `?` straight away. C does not have
+RAII, so releasing resources when an error occurs is something that needs to
+happen manually. This is the one remaining valid use case of `goto` in the C
+language, and it is often actually the most sustainable way to deal with errors.
+More civilized languages (such as Rust) don't even have this misfeature.
 
-So what does an honest C programmer do when they have multiple failure modes,
-but don't want to copy and paste their cleanup code between different branches,
-all of which would be very prone to mistakes down the line?
+Thus, in order to start leveraging the error handling features of Rust, all
+things that own memory must first be converted to RAII objects, such as
+`String`, `Vec`, `VecDeque`, etc.
 
-That's right: `goto`.
+Rust `Result`s are rich: They can contain an error value of your choice, so you
+can provide the best possible message for the users, giving them all the context
+they need. C does not have this option built in, and most libraries opt for
+simply returning an error code, and then sometimes allowing the programmer to
+obtain more information about the error after the fact.
 
-Modern languages like Rust scoff at such perversions of structure and order,
-while C stands in the corner with an evil smirk. There's just no good way around
-it, and for all of its horrors, it is probably the least horrible option even in
-modern C code.
+In libyaml, this looks like so:
 
-Rust, having wisely chosen to not include this control flow primitive in its vocabulary,
+```c
+struct yaml_parser_t {
+    yaml_error_type_t error;
+    const char* problem;
+    yaml_mark_t problem_mark;
+    const char* context;
+    yaml_mark_t context_mark;
+    // ...
+}
+```
 
+When an error occurs, the relevant function (such as `yaml_parser_parse()`) sets
+the error fields (`yaml_set_parser_error()`), and returns an integer indicating
+that an error occurred. The user is then expected to access these fields to
+determine (a) what the error was and (b) where in the input it occurred.
 
-## Making invalid states unrepresentable
+In Rust, we don't want a special "error" state for the parser. Ideally, we want
+to be able to return a self-contained error instead, which can then have all the
+usual niceties, like `std::fmt::Display`.
+
+Note also that the reported error is not necessarily a "parse error". Lots of
+errors can occur that aren't typically considered syntax errors: I/O read
+errors, invalid Unicode, tokenization errors, etc.
+
+Let's try some enums:
+
+```rust
+enum ParserError {
+    Problem {
+        problem: &'static str,
+        problem_mark: Mark,
+        context: &'static str,
+        context_mark: Mark,
+    }
+    Scanner(ScannerError),
+}
+
+enum ScannerError {
+    Problem {
+        problem: &'static str,
+        problem_mark: Mark,
+        context: &'static str,
+        context_mark: Mark,
+    },
+    Reader(ReaderError),
+}
+
+enum ReaderError {
+    Problem {
+        problem: &'static str,
+        offset: usize,
+        value: i32,
+    },
+    Io(std::io::Error),
+}
+```
+
+So nice, perfect fidelity and high-quality error reporting. Except... On a
+64-bit architecture, the size of the top-level `ParserError` enum is 88 bytes.
+Why is this a problem?
+
+1. Even the minimal `Result<(), ParserError>` can never be returned in a register.
+2. Every function that encounters a `Result<T, ParserError>` and wants to return
+   `Result<U, ParserError>` needs to re-wrap the return value, no matter if an
+   error occurred or not, leading to a lot of copying of large structs in stack
+   memory.
+3. While LLVM will [inline calls to `memcpy()` below 128
+   bytes](https://github.com/rust-lang/rust/pull/64302#issuecomment-529840404),
+   instructions to copy these values are still generated.
+
+The parser makes a huge number of tiny calls, and each of them can fail. Every
+time it needs a new token, it might also need a new character, meaning it might
+also need another byte from the input buffer, meaning it might also need to
+perform a `read()` operation from the input, which can fail with
+`std::io::Error`, or with a Unicode decoding error, or with a tokenization
+error, and finally a parser error.
+
+All in all, a very large error type like this is... not great.
+
+There are a couple of options for moving forward:
+
+1. Mimic the libyaml style of errors, and set error codes on the parser object
+   itself. This gives a much less ergonomic API, or would introduce a lifetime
+   parameter on all return values that isn't very nice.
+2. Codegolfing the above enums to reduce the size. Not much can be won without
+   losing fidelity, but it could probably get down to about 64 bytes.
+3. Wrap the error in a `Box`, reducing the size to only 8 bytes on 64-bit
+   platforms. The heap allocation isn't great, but it would only happen in error
+   scenarios, so it's trading some efficiency in the error path for a faster
+   "happy" path.
+4. Accept that this is our life now and move on.
+
+All compromises, either in usability or performance.
+
+I benchmarked options (3) and (4) against each other in the happy path, and
+there wasn't much difference. But committing to an "inefficient" public API
+where the user can see the inner workings of the error enums is a semver hazard,
+so for now I've chosen an API that supports both implementations.
+
+Zooming out, it's worth noting that
+[`serde_yaml::Error`](https://docs.rs/serde_yaml/latest/src/serde_yaml/error.rs.html#12)
+has actually chosen (3), a boxed error, which is an indication to me that I am
+not alone in considering this an acceptable tradeoff.
 
 ## Freebies
 
+Rust, being a younger language, has a much richer standard library. This means
+that several things that are implemented manually in libyaml can be replaced
+with standard facilities.
+
+- UTF-8 and UTF-16 encoding/decoding. These aren't particularly complicated, but
+  the Rust standard library is likely to be better optimized (for example, using
+  SIMD when available).
+- Rather than user-provided unsafe callbacks, input and output can be handled by
+  the `std::io::Read` and `std::io::Write` traits. This gives users the ability
+  to plug anything in there, such as tty streams, network streams, etc., with no
+  extra effort.
+- The parser requires some input buffering to perform correct decoding, but
+  libyaml is practically forced to do this by itself, even when the input is
+  already buffered by the user. By using the `std::io::BufRead` trait, an entire
+  intermediate buffer was eliminated from the parser, meaning that if the data
+  is already coming from an in-memory buffer, the unnecessary copy is elided.
+
+## Testing
+
+`unsafe-libyaml` is automatically tested against [the official YAML test
+suite](https://github.com/yaml/yaml-test-suite). Having this comprehensive test
+suite was an absolute necessity when porting to safe Rust, and I would not have
+dared to embark on this endeavor without it.
+
+Even though it is much easier to write correct code in safe Rust than in C,
+logic bugs are obviously just as possible, particularly when performing very
+large scale refactorings, which is essentially what this is.
+
 ## Performance
+
+In order to compare the performance of unsafe-libyaml and the safe Rust port, I
+found a very large YAML document (~700 KiB) and built a very simple benchmark
+using [Criterion].
+
+Here is the gist of it:
+
+|  | unsafe-libyaml | libyaml-safer |
+|--|-------|------|
+| Parse 700 KiB document | 38.258 ms |  37.447 ms |
+| Emit 700 KiB document  | 18.491 ms | 17.549 ms |
+
+These benchmarks were run on an AMD Ryzen 9 3950X 16-Core CPU (3.5 GHz) running
+Windows 11.
+
+### Analysis
+
+* **Important:** While I do consistently get slightly faster times for
+  libyaml-safer, I don't consider this benchmark to be conclusive in any way.
+* What these numbers _do_ indicate is that the port to safe, idiomatic Rust does
+  not produce meaningfully slower code.
+  * The justification for "unsafe" C and C++ libraries is often that some
+    performance is left on the table with safe Rust, primarily due to bounds
+    checking. On modern hardware this justification has always seemed pretty
+    dubious to me, and I think this is another piece of circumstantial evidence
+    that often just doesn't matter in practice.
+* _If_ libyaml-safer is consistently faster for all workloads, here are some
+  possible explanations:
+  * libyaml needs to assert on a couple of invariants (such as pointers not
+    being NULL), and unsafe-libyaml performs these assertions even in release
+    mode. Some of these invariants are statically checked in safe Rust, where
+    `&T` can never be "NULL".
+  * Due to the use of `std::io::BufRead` in the parser, the parser performs
+    fewer in-memory copies.
+* _Even if_ these benchmarks are completely bogus, the performance of
+  libyaml-safer is still well within tolerable bounds for what is acceptable,
+  considering the massive increase in maintainability and safety. No significant
+  effort was made to optimize things, other than just not choosing obviously
+  slower safe alternatives.
+  * One optimization that might make sense is to implement more efficient
+    lookahead in the parser. Currently, there are many places where the scanner
+    and parser perform many redundant bounds checks on the input buffer.
+
+## Conclusion
+
+This was a lot of fun.
+
+I think, to me, and to a lot of software engineers who came from a C++
+background, using Rust is not just about nebulous promises of safety and
+correctness.
+
+It's about bringing the joy back into programming.
+
+We all like designing pretty, user-friendly APIs, we all like to produce things
+that just feel high quality. Many of us don't get to do that, because the
+realities of our industry often do not permit it.
+
+Coding in Rust feels like having your cake and eating it too. When people are
+productive in Rust, it is because it makes many things that used to be hard -
+things that cause tears, blood, and burnout - are no longer as hard. The result
+is not just safer and easier, it is also just as performant. So please - join
+us.
+
+#### Footnotes
+
+- In this post I have preserved type names and function names from
+  `unsafe-libyaml`, but as part of porting to _idiomatic_ Rust, I also did
+  rename all types and enums following idiomatic Rust conventions.
+
 
 [YAML]: https://yaml.org/
 [serde_yaml]: https://crates.io/crates/serde_yaml
@@ -142,3 +513,4 @@ Rust, having wisely chosen to not include this control flow primitive in its voc
 [unsafe-libyaml]: https://github.com/dtolnay/unsafe-libyaml
 [c2rust]: https://c2rust.com/
 [`Result`]: https://doc.rust-lang.org/stable/std/result/enum.Result.html
+[Criterion]: https://docs.rs/criterion/latest/criterion/
