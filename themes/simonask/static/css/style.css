@@ -4,7 +4,7 @@
   --primary: #ee6890;
   --secondary: #67ba49;
   --link: #27ade6;
-  --headColor: #;
+  --code: #d69674;
   --linkColor: #5690AF;
   --hovColor: #22453F;
   --bgSelect: #FFFAE1;
@@ -32,7 +32,7 @@
   --primary: #ee6890;
   --secondary: #96dc76;
   --link: #27ade6;
-  --headColor: #;
+  --code: #d69674;
   --linkColor: #DBD5BC;
   --hovColor: #E2AEA2;
   --bgSelect: #464949;
@@ -240,7 +240,7 @@ li code,
 div code {
   padding: 0 .2rem 0 .2rem;
   border-radius: .3rem;
-  color: var(--secondary);
+  color: var(--code);
 }
 
 a code {

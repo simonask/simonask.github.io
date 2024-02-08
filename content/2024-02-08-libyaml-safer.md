@@ -243,7 +243,7 @@ Wonderful! Now the `Analysis<'a>` struct just needs to be passed into any
 emitter function that needs the analysis as an extra parameter. Thankfully no
 public API function on the emitter relies on analysis having happened
 previously, so threading that argument through the emitter code is fairly
-trivial, and due to lifetime annotations guaranteed bug-free, in the sense that
+trivial, and guaranteed bug-free due to lifetime annotations, in the sense that
 it is not possible for any part of the emitter to use the analysis of one event
 during the emission of another event.
 
@@ -252,14 +252,17 @@ because it would not be possible to make the borrow checker happy without it. On
 the other hand, the Rust compiler actually nudges us to choose a better design
 than the original.
 
-Why is this beneficial? Well, see, reading the original source code for libyaml
-was hard. Upon seeing the `anchor_data`, `tag_data`, and `scalar_data` fields of
-`yaml_emitter_t`, the first thing any reader or maintainer has to do is figure
-out how those pointers are used and when they are valid. This required a bunch
-of forensics, which would have to happen again and again everytime someone new
-looked at the code, and "someone new" also includes "future you".
+Why is this beneficial? Why do we accept such blatant tyranny by the cruel and
+cold-hearted borrow checker?
 
-The original design from the C code could have been ported verbatim to Rust, but
+Well, see, reading the original source code for libyaml was hard. Upon seeing
+the `anchor_data`, `tag_data`, and `scalar_data` fields of `yaml_emitter_t`, the
+first thing any reader or maintainer has to do is figure out how those pointers
+are used and when they are valid. This required a whole bunch of forensics,
+which would have to happen again and again every time someone new looked at the
+code, and "someone new" also includes "future you".
+
+The original design from the C code could have been ported verbatim to Rust. But
 it would require a lot of unsafe code, which would have made it very obvious
 that some cognitive overhead was being incurred. By choosing a design that works
 in safe Rust, that cognitive overhead has been moved to a statically verified
@@ -273,26 +276,49 @@ One of my goals with libyaml-safer was to provide near perfect error fidelity
 compared with libyaml.
 
 Mercifully, C does not have exceptions. They are easily among the top 20 of
-humanity's mistakes in the latter half of the 20th century, and don't even come
-for me because I will die on this hill.
+humanity's mistakes, and don't even come for me because I will die on this hill.
 
-What this means is that the flow around error handling is surprisingly similar
-between well-structured C code and idiomatic Rust code. Rust has the `?`
-operator to make things easier, and one of the important affordances of
-[unsafe-libyaml] (Rust) over [libyaml] (C) is that integer return codes are
-replaced with a bespoke `Success` struct. Replacing this with [`Result`] turned
-out to be [pretty
+Instead, C code usually reports errors by returning an error code, and this is
+already a primitive version of what Rust does. The flow around error handling is
+surprisingly similar between well-structured C code and idiomatic Rust code.
+Rust has the "try" operator `?` to make things easier, and one of the important
+affordances of [unsafe-libyaml] (Rust) over [libyaml] (C) is that integer return
+codes are replaced with a bespoke `Success` struct. Replacing this with
+[`Result`] turned out to be [pretty
 trivial](https://github.com/simonask/libyaml-safer/commit/dc639b92b5754f58e8e8f7979449ba6aca54c3a6).
 
-But wait a minute... We can't just use the `?` straight away. C does not have
-RAII, so releasing resources when an error occurs is something that needs to
-happen manually. This is the one remaining valid use case of `goto` in the C
-language, and it is often actually the most sustainable way to deal with errors.
-More civilized languages (such as Rust) don't even have this misfeature.
+But wait a minute... We can't just use the `?` straight away. It checks if an
+error occurred and returns early from the function if it did, but C does not
+have RAII, so resources need to be released as well before returning. This is
+the one remaining valid use case of `goto` in the C language, and it is often
+actually the most sustainable way to deal with errors. More civilized languages
+(such as Rust) don't even have this misfeature.
+
+```c
+void* stupid_c() {
+    void* some_memory = malloc(1024);
+    if (some_function(some_memory) != ERROR) {
+      // ...
+    } else {
+      goto cleanup;
+    }
+
+    if (some_other_function(some_memory) != ERROR) {
+      return some_memory;
+    }
+
+cleanup:
+    // We're returning an error, so we need to free what we allocated.
+    free(some_memory);
+    return NULL;
+}
+```
 
 Thus, in order to start leveraging the error handling features of Rust, all
 things that own memory must first be converted to RAII objects, such as
 `String`, `Vec`, `VecDeque`, etc.
+
+After that, there is the problem of actually reporting the error.
 
 Rust `Result`s are rich: They can contain an error value of your choice, so you
 can provide the best possible message for the users, giving them all the context
@@ -316,17 +342,17 @@ struct yaml_parser_t {
 When an error occurs, the relevant function (such as `yaml_parser_parse()`) sets
 the error fields (`yaml_set_parser_error()`), and returns an integer indicating
 that an error occurred. The user is then expected to access these fields to
-determine (a) what the error was and (b) where in the input it occurred.
+determine what the error was and where in the input it occurred.
 
 In Rust, we don't want a special "error" state for the parser. Ideally, we want
 to be able to return a self-contained error instead, which can then have all the
-usual niceties, like `std::fmt::Display`.
+usual niceties, like an implementation of `std::fmt::Display`.
 
 Note also that the reported error is not necessarily a "parse error". Lots of
 errors can occur that aren't typically considered syntax errors: I/O read
 errors, invalid Unicode, tokenization errors, etc.
 
-Let's try some enums:
+Let's try with some enums:
 
 ```rust
 enum ParserError {
@@ -360,8 +386,21 @@ enum ReaderError {
 ```
 
 So nice, perfect fidelity and high-quality error reporting. Except... On a
-64-bit architecture, the size of the top-level `ParserError` enum is 88 bytes.
-Why is this a problem?
+64-bit architecture, the size of the top-level `ParserError` enum is 88 bytes,
+mostly due to the `Mark` type, which indicates a location in the input, and
+which looks like this:
+
+```rust
+struct Mark {
+    pub line: u64,
+    pub column: u64,
+    pub index: u64,
+}
+```
+
+24 bytes, and each error typically needs 2 marks.
+
+Why is the size a problem?
 
 1. Even the minimal `Result<(), ParserError>` can never be returned in a register.
 2. Every function that encounters a `Result<T, ParserError>` and wants to return
@@ -397,14 +436,15 @@ There are a couple of options for moving forward:
 All compromises, either in usability or performance.
 
 I benchmarked options (3) and (4) against each other in the happy path, and
-there wasn't much difference. But committing to an "inefficient" public API
-where the user can see the inner workings of the error enums is a semver hazard,
-so for now I've chosen an API that supports both implementations.
+there wasn't much difference. But it still _feels wrong_, and committing to an
+"inefficient" public API where the user can see the inner workings of the error
+enums is a semver hazard, so for now I've chosen an API that supports both
+implementations, and boxed (3) under the hood.
 
 Zooming out, it's worth noting that
 [`serde_yaml::Error`](https://docs.rs/serde_yaml/latest/src/serde_yaml/error.rs.html#12)
-has actually chosen (3), a boxed error, which is an indication to me that I am
-not alone in considering this an acceptable tradeoff.
+has actually chosen (3), a boxed error, which is an indication that I am not the
+only person in the world in considering this an acceptable tradeoff.
 
 ## Freebies
 
@@ -443,20 +483,22 @@ sneak in, and even moreso when there are hundreds.
 
 Even though it is much easier to write correct code in safe Rust than in C,
 logic bugs are obviously just as possible, particularly when performing very
-large scale refactorings, which is essentially what this is.
+large scale refactoring.
 
 ## Performance
 
 In order to compare the performance of unsafe-libyaml and the safe Rust port, I
-found a very large YAML document (~700 KiB) and built a very simple benchmark
-using [Criterion].
+found a relatively large YAML document (~700 KiB) and built a very simple
+benchmark using [Criterion].
 
-Here is the gist of it:
+In short:
 
 |  | unsafe-libyaml | libyaml-safer |
 |--|-------|------|
 | Parse 700 KiB document | 38.258 ms |  37.447 ms |
 | Emit 700 KiB document  | 18.491 ms | 17.549 ms |
+
+_Hold for applause._
 
 These benchmarks were run on an AMD Ryzen 9 3950X 16-Core CPU (3.5 GHz) running
 Windows 11.
@@ -469,22 +511,24 @@ Windows 11.
   not produce meaningfully slower code.
   * The justification for "unsafe" C and C++ libraries is often that some
     performance is left on the table with safe Rust, primarily due to bounds
-    checking. On modern hardware this justification has always seemed pretty
-    dubious to me, and I think this is another piece of circumstantial evidence
-    that often just doesn't matter in practice.
+    checking. On modern hardware this justification has always seemed a bit
+    suspicious to me, and I think this is another piece of (circumstantial)
+    evidence that it often just doesn't matter in practice.
+  * It's certainly possible to build things where bounds checking makes a
+    difference. This just isn't that.
 * _If_ libyaml-safer is consistently faster for all workloads, here are some
   possible explanations:
-  * libyaml needs to assert on a couple of invariants (such as pointers not
+  * C libyaml needs to assert on a couple of invariants (such as pointers not
     being NULL), and unsafe-libyaml performs these assertions even in release
     mode. Some of these invariants are statically checked in safe Rust, where
     `&T` can never be "NULL".
   * Due to the use of `std::io::BufRead` in the parser, the parser performs
     fewer in-memory copies.
-* _Even if_ these benchmarks are completely bogus, the performance of
-  libyaml-safer is still well within tolerable bounds for what is acceptable,
-  considering the massive increase in maintainability and safety. No significant
-  effort was made to optimize things, other than just not choosing obviously
-  slower safe alternatives.
+* _Even if_ this benchmark is completely bogus, the performance of libyaml-safer
+  is still well within tolerance for what is acceptable, considering the massive
+  increase in maintainability and safety
+* Zero effort was made to optimize things, other than just not choosing
+  obviously slower safe alternatives.
   * One optimization that might make sense is to implement more efficient
     lookahead in the parser. Currently, there are many places where the scanner
     and parser perform many redundant bounds checks on the input buffer.
@@ -499,9 +543,9 @@ correctness.
 
 It's about bringing the joy back into programming.
 
-We all like designing pretty, user-friendly APIs, we all like to produce things
+We all like to design pretty, user-friendly APIs, we all like to produce things
 that just feel high quality. Many of us don't get to do that, because the
-realities of our industry often do not permit it.
+realities of our industry often do not permit it. And so, does it spark joy?
 
 Coding in Rust feels like having your cake and eating it too. When people are
 productive in Rust, it is because it makes many things that used to be hard -
