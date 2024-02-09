@@ -100,7 +100,7 @@ over bytes or substrings of the string.
 What's going on here?
 
 It turns out that this data structure serves multiple different purposes
-simultaneously: It is both `&str`, `String`, and `std::str::Iter`, all in one.
+simultaneously: It is both `&str`, `String`, and `std::slice::Iter`, all in one.
 Sometimes it is even the `std::str::Chars` iterator, which is used to iterate
 over full UTF-8 codepoints within the string. The only way to determine which
 abstraction it is currently emulating is to look at the context.
