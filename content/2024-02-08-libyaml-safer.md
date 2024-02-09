@@ -36,6 +36,9 @@ line. It took a little over a week.
 
 The [result is available on GitHub](https://github.com/simonask/libyaml-safer).
 
+**Update 2024-02-09:** libyaml-safer has now been [published to
+crates.io](https://crates.io/crates/libyaml-safer) as well.
+
 ## What are we dealing with?
 
 libyaml consists of two main components:
