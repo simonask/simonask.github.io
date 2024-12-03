@@ -9,7 +9,8 @@
 <hr />
 
 {% if page.toc and page.extra.toc %}
-<h2>Table of contents</h2>
+<p class="toc">
+  <strong>Table of contents:</strong>
 <ul>
   {% for h1 in page.toc %}
   <li>
@@ -33,6 +34,7 @@
   </li>
   {% endfor %}
 </ul>
+</p>
 <hr />
 {% endif %}
 

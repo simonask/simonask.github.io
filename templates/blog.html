@@ -8,8 +8,12 @@
     <div class="post-content">
         <ul>
             {% for page in section.pages %}
-            <li><span class="metaData">{{ page.date }}</span> <a href="{{page.permalink | safe }}">{{ page.title }}</a>
+            {% if not page.extra.draft %}
+            <li>
+                <span class="metaData">{{ page.date }}</span>
+                <a href="{{page.permalink | safe }}">{{ page.title }}</a>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
     </div>

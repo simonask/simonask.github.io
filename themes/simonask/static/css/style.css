@@ -10,11 +10,12 @@
   --bgSelect: #FFFAE1;
   --bgUrl: url(https://i.ibb.co/Qpkrw4V/tile-Light.webp) repeat;
   --red: #D26878;
-  --dimRed: #623039;
+  --red-alert: #D26878;
+  --dimRed: #fcdce2;
   --orange: #e08f67;
   --dimOrange: #926048;
-  --yellow: #e08f67;
-  --dimYellow: #D5C5A1;
+  --yellow: #e0ba67;
+  --dimYellow: #fff7e3;
   --green: #56AFA0;
   --dimGreen: #3E615C;
   --blue: #5690AF;
@@ -38,11 +39,12 @@
   --bgSelect: #464949;
   --bgUrl: url(https://i.ibb.co/LzrFBFJ/tileDark.webp) repeat;
   --red: #CD909B;
-  --dimRed: #684249;
+  --red-alert: #ce3d52;
+  --dimRed: #55353b;
   --orange: #E2AEA2;
   --dimOrange: #704941;
   --yellow: #fced65;
-  --dimYellow: #6F6847;
+  --dimYellow: #5c511b;
   --green: #78B6AD;
   --dimGreen: #3E615C;
   --blue: #87C9E5;
@@ -90,7 +92,7 @@ h1 {
 }
 
 h2 {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
 }
 
 h3 {
@@ -181,8 +183,10 @@ ol li::marker {
 }
 
 blockquote {
-  border-left: .5rem solid var(--primary);
+  border-left: .5rem solid var(--secondary);
   margin: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   padding: 0 0 0 1rem
 }
 
@@ -433,4 +437,71 @@ nav.navBar a {
   .wrapper {
     margin: 1rem;
   }
+}
+
+blockquote.caution {
+  border-style: solid;
+  border-radius: 1rem;
+  border-color: var(--red-alert);
+  border-width: 3px;
+  padding: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  background-color: var(--dimRed);
+}
+
+blockquote.info {
+  border-style: solid;
+  border-radius: 1rem;
+  border-color: var(--yellow);
+  border-width: 3px;
+  padding: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  background-color: var(--dimYellow);
+}
+
+blockquote.rainbow {
+  --step1: #b827fc;
+  --step2: #2c90fc;
+  --step3: #b8fd33;
+  --step4: #fec837;
+  --step5: #fd1892;
+  --step1-bg: color-mix(in oklab, #b827fc, var(--bgColor) 75%);
+  --step2-bg: color-mix(in oklab, #2c90fc, var(--bgColor) 75%);
+  --step3-bg: color-mix(in oklab, #b8fd33, var(--bgColor) 75%);
+  --step4-bg: color-mix(in oklab, #fec837, var(--bgColor) 75%);
+  --step5-bg: color-mix(in oklab, #fd1892, var(--bgColor) 75%);
+
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 1rem;
+  background-image: 
+                    /* linear-gradient(var(--bgColor), var(--bgColor)), */
+                    linear-gradient(-135deg,
+                      var(--step1-bg) 0%,
+                      var(--step2-bg) 25%,
+                      var(--step3-bg) 50%,
+                      var(--step4-bg) 75%,
+                      var(--step5-bg) 100%
+                    ),
+                    linear-gradient(45deg,
+                      var(--step1) 0%,
+                      var(--step2) 25%,
+                      var(--step3) 50%,
+                      var(--step4) 75%,
+                      var(--step5) 100%
+                    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-width: 3px;
+  padding: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
