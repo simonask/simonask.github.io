@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="robots" content="index, follow">
+
+
+
+
+
+
+
+
+
+
+
+
+<title>Introducing Werk</title>
+
+
+
+<meta name="title" content="Introducing Werk">
+
+
+<meta name="author" content="Simon Ask Ulsnes">
+
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://simonask.github.io/introducing-werk/">
+
+<meta property="og:site_name" content="">
+
+
+<meta property="og:title" content="Introducing Werk">
+
+
+
+
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://simonask.github.io/introducing-werk/">
+
+<meta property="twitter:title" content="Introducing Werk">
+
+
+
+
+<link rel="canonical" href="https://simonask.github.io/introducing-werk/">
+
+
+
+
+<link rel="stylesheet" href="https://simonask.github.io/css/style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+<script src="https://simonask.github.io/js/script.js" defer></script>
+
+</head>
+<body>
+    <div class="wrapper">
+      <header>
+          
+
+  
+
+
+  <nav class="navBar">
+    
+      <a href="&#x2F;" class="">
+        
+        blog
+      </a>
+    
+      <a href="&#x2F;about" class="">
+        
+        about
+      </a>
+    
+      <a href="https:&#x2F;&#x2F;github.com&#x2F;simonask" class="">
+        
+        github
+      </a>
+    
+
+  <div class="themeSwitch">
+    
+    <button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href="https://simonask.github.io/icons.svg#darkMode"></use></svg></button>
+    <button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"><use href="https://simonask.github.io/icons.svg#lightMode"></use></svg></button>
+    
+  </div>
+</nav>
+
+
+      </header>
+      <main>
+          
+<span class="metaData">
+  
+  <address rel="author">Simon Ask Ulsnes</address>,
+  
+  <time datetime="2024-12-03">2024-12-03</time>
+</span>
+<hr />
+
+
+<p class="toc">
+  <strong>Table of contents:</strong>
+<ul>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#introducing-werk-nail-care">Introducing Werk 💅</a>
+    
+    <ul>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#just-immediately-why">Just immediately, Why?!</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#installation">Installation</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#design">Design</a>
+    
+    <ul>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#example">Example</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#outdatedness-staleness">Outdatedness &#x2F; Staleness</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#werkspace-output-directory">Werkspace &amp; Output Directory</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#filesystem">Filesystem</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#running-other-programs">Running other programs</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#depfiles">Depfiles</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#controlling-side-effects-i-o-sandboxing">Controlling side effects: I&#x2F;O sandboxing</a>
+        <ul>
+          
+        </ul>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#variables">Variables</a>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#strings-interpolation">Strings &amp; Interpolation</a>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#expressions">Expressions</a>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#modes">Modes</a>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#final-remarks">Final Remarks</a>
+    
+  </li>
+  
+</ul>
+</p>
+<hr />
+
+
+<h1 id="introducing-werk-nail-care">Introducing Werk 💅</h1>
+<p><code>werk</code> is a command runner, similar to <code>just</code>, as well as a simplistic build
+system, similar to <code>make</code>.</p>
+<p>This is a general overview. For a more detailed explanation of syntax and
+behavior, please consult the project's
+<a href="https://github.com/simonask/werk/blob/main/README.md">README</a>.</p>
+<p>The source code for <code>werk</code> is <a href="https://github.com/simonask/werk">available on
+GitHub</a>.</p>
+<p>Check out <a href="https://github.com/simonask/werk/tree/main/examples">the examples</a>.</p>
+<blockquote class="caution">
+<strong>Caution:</strong>
+<code>werk</code> is alpha software. Some features may be buggy or missing. It may
+eat your code. Use at your own risk. Commit everything before trying it out. Consider
+trying it out in a virtual machine first. Don't blame me if you didn't.
+</blockquote>
+<h2 id="just-immediately-why">Just immediately, Why?!</h2>
+<p>The motivation for <code>werk</code> is that <code>make</code> is annoying. It's a very sophisticated
+tool that solves a bunch of problems I don't have, and doesn't solve many of the
+problems I do have.</p>
+<p>My personal use case - highly specific, but far from unique:</p>
+<ul>
+<li>I'm building a video game.</li>
+<li>Some of the assets (WASM plugins) are built by Cargo.</li>
+<li>Other assets (shaders) are built by <code>glslc</code> and <code>slangc</code>. Shader compilation
+is slow, so precise dependency tracking (depfiles) is essential.</li>
+<li>The assets for the game are built "offline" into a custom asset pack format.</li>
+<li>Assets, including WASM code, can be hot-reloaded by the engine.</li>
+<li>Windows support is a hard requirement.</li>
+<li>When it doesn't do what I want, I need to be able to understand why.</li>
+</ul>
+<p>Here's an incomplete list of problems I have with <code>make</code>:</p>
+<ul>
+<li>I want to use file names and paths that contain whitespace.</li>
+<li>I want build rules and "housekeeping" commands to not interact in surprising
+and bad ways <em>(he's a big fat <code>.PHONY</code>!)</em>.</li>
+<li>I want to work natively on Windows, as well as Linux and macOS. You can get
+GNU Make to sort of work using layers of emulation, but fundamentally it's a
+bad experience. Specifically, Makefiles typically rely on the presence of
+external POSIX utilities, like <code>sed</code>, <code>awk</code>, and so on, and all of these
+interact in bad ways with Windows filesystems.</li>
+<li>I want to put build artifacts in a separate directory.</li>
+<li>I want to use glob patterns in my build scripts (reliably), and I want them to
+be <code>.gitignore</code>-sensitive.</li>
+<li>I want to be able to diagnose my build process. The output of <code>make -d</code> is
+unreasonable.</li>
+</ul>
+<p>Here's a 100% exhaustive list of problems I have with <code>just</code> (seriously, it's
+great, but):</p>
+<ul>
+<li>It can't build things, only run commands.</li>
+<li>When you do anything fancy you generally need a shell, making <code>Justfile</code>s
+non-portable.</li>
+</ul>
+<p>Here's a loose collection of problems I have with other purportedly
+cross-platform tools:</p>
+<ul>
+<li><code>ninja</code>: Too low-level, not nice to write by hand, very specialized for C/C++.</li>
+<li><code>scons</code>: Very clunky in my opinion, annoying Python runtime dependency.</li>
+<li><code>rake</code>: Ruby straight up does not work on Windows.</li>
+<li><code>cargo xtask</code>: Only runs commands ("workflows"), similar to <code>just</code>.</li>
+<li><code>cargo script</code>: Solves a different problem.</li>
+<li><code>cmake</code>: I'm too traumatized already.</li>
+<li>All the Java tools (<code>gradle</code>, <code>maven</code>, <code>bazel</code>): I'm sorry, I can't.</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>The only supported distribution method for <code>werk</code> is cloning the repository from
+GitHub and building it from source. If this is a problem for you, <code>werk</code> probably
+isn't a tool for you.</p>
+<p>The only system dependencies are <code>rustc</code> and <code>cargo</code>.</p>
+<pre style="background-color:#2b303b;color:#6c7079;"><code><span style="color:#abb2bf;">$ git clone https://github.com/simonask/werk.git
+</span><span style="color:#abb2bf;">$ cd werk
+</span><span style="color:#abb2bf;">$ cargo build --release
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;"># Executable is available at ./target/release/werk(.exe).
+</span></code></pre>
+<h1 id="design">Design</h1>
+<p><code>werk</code> parses a TOML file containing "recipes", determines what the user wants
+to build, what the dependencies are, and runs programs to rebuild any outdated
+build products in the right order.</p>
+<blockquote>
+<p><strong>Why TOML?</strong> I don't want to write an LSP server. Who has the time.</p>
+</blockquote>
+<blockquote>
+<p><strong>Why not YAML?</strong> I actually like YAML, and it would be easy to add support,
+but one crucial difference between the two is that YAML does not support
+"reopening" a mapping, so commands and recipes could not be expressed as
+naturally between each other.</p>
+</blockquote>
+<blockquote>
+<p><strong>Why not JSON or XML?</strong> Neither is human-readable. Change my mind, I dare
+you to try.</p>
+</blockquote>
+<h2 id="example">Example</h2>
+<p>Here's a minimal <code>werk.toml</code> to build a C program:</p>
+<pre data-lang="toml" style="background-color:#2b303b;color:#6c7079;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#abb2bf;">[global]
+</span><span style="color:#eb6772;">cc</span><span style="color:#abb2bf;">.</span><span style="color:#eb6772;">which </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;clang&quot;
+</span><span style="color:#eb6772;">ld </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{cc}&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;">[build.</span><span style="color:#9acc76;">&#39;%.o&#39;</span><span style="color:#abb2bf;">]
+</span><span style="color:#eb6772;">in </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{%}.c&quot;
+</span><span style="color:#eb6772;">depfile </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{%}.c.d&quot;
+</span><span style="color:#eb6772;">command </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{cc} -c -o &lt;out&gt; &lt;in&gt;&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;">[build.</span><span style="color:#9acc76;">&#39;%.c.d&#39;</span><span style="color:#abb2bf;">]
+</span><span style="color:#eb6772;">in </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{%}.c&quot;
+</span><span style="color:#eb6772;">command </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{cc} -MM -MT &lt;in&gt; -MF &lt;out&gt; &lt;in&gt;&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;">[build.</span><span style="color:#9acc76;">&#39;example{EXE_SUFFIX}&#39;</span><span style="color:#abb2bf;">]
+</span><span style="color:#eb6772;">in </span><span style="color:#abb2bf;">= { </span><span style="color:#eb6772;">glob </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;*.c&quot;</span><span style="color:#abb2bf;">, </span><span style="color:#eb6772;">then </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{:.c=.o}&quot; </span><span style="color:#abb2bf;">}
+</span><span style="color:#eb6772;">command </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;{cc} &lt;in*&gt; -o &lt;out&gt;&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;">[command.build]
+</span><span style="color:#eb6772;">build </span><span style="color:#abb2bf;">= [</span><span style="color:#9acc76;">&quot;example{EXE_SUFFIX}&quot;</span><span style="color:#abb2bf;">]
+</span><span style="color:#eb6772;">post-message </span><span style="color:#abb2bf;">= </span><span style="color:#9acc76;">&quot;Build complete!&quot;
+</span></code></pre>
+<p>It's a regular TOML document, except that <code>werk</code> also parses string values
+containing interpolations <code>{...}</code> or <code>&lt;...&gt;</code>.</p>
+<p><em>Example run:</em></p>
+<pre style="background-color:#2b303b;color:#6c7079;"><code><span style="color:#abb2bf;">$ werk build
+</span><span style="color:#abb2bf;">[OK] /foo.o
+</span><span style="color:#abb2bf;">[OK] /main.o
+</span><span style="color:#abb2bf;">[OK] /example.exe
+</span><span style="color:#abb2bf;">[OK] build
+</span><span style="color:#abb2bf;">[info] Build complete!
+</span></code></pre>
+<h2 id="outdatedness-staleness">Outdatedness / Staleness</h2>
+<p>The heart and soul of any build system. Targets are considered outdated under a
+number of conditions:</p>
+<ol>
+<li><strong>File modification time.</strong> If an artifact is older than its prerequisites,
+it will be rebuilt.</li>
+<li><strong>Glob patterns.</strong> If a target takes the result of a glob operation (like
+<code>src/*.c</code>) as its input, <code>werk</code> detects when the result changed (including if
+files were deleted!), and rebuilds the target(s) that depend on the result.</li>
+<li><strong>Environment variables.</strong> If a target depends on the value of an environment
+variable, it will be considered outdated if the value changes between runs.</li>
+<li><strong><code>which</code> lookup.</strong> If a target recipe uses a program that is found via the
+<code>PATH</code> environment variable, the target will be considered outdated if the
+path to the program changes.</li>
+</ol>
+<p>Tracking glob results and environment variables requires some knowledge, other
+than filesystem timestamps, to be transferred between runs. Werk writes a
+<code>.werk-cache</code> file to its output directory containing only enough information to
+determine whether things changed. Environment variables are hashed, so your
+secrets should be safe, but be careful.</p>
+<h2 id="werkspace-output-directory">Werkspace &amp; Output Directory</h2>
+<p>"Workspace" refers to the directory containing <code>werk.toml</code> and its
+subdirectories, but not including any file or directory mentioned by
+<code>.gitignore</code>, and not including the output directory.</p>
+<p>"Output directory" refers to the location of build artifacts. <code>werk</code> will only
+ever write to files within this directory, and puts <code>.werk-cache</code> in its root.</p>
+<p>If <code>werk</code> detects a file named <code>.werk-cache</code> in the workspace (i.e., it exists
+within a directory not mentioned by <code>.gitignore</code>), that is a hard error for your
+protection.</p>
+<blockquote class="caution">
+<code>werk</code> can use the same output directory as other build tools, like
+<code>cargo</code>, but it doesn't try to avoid overwriting files generated by
+other tools. Do this with caution.<br /><br />
+<strong>Note:</strong> In the case of <code>cargo</code>, using the same output
+directory also means that <code>cargo clean</code> will remove all build artifacts
+produced by <code>werk</code>, including <code>.werk-cache</code>.
+</blockquote>
+<h2 id="filesystem">Filesystem</h2>
+<p>Filesystem paths are just fundamentally not portable between Unix-like systems
+and Windows. Let's be honest - Windows is very weird. Using backslash <code>\</code> as the
+path separator is just the start. Some file names are outright banned. Bet
+you didn't know that <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file">Windows will yell at
+you</a> if
+you try to read or create a file called, say, <code>com¹.txt</code> (not a footnote - the
+superscript <code>¹</code> is illegal when preceded by <code>com</code>, <code>COM</code>, <code>cOm</code>, or <code>CoM</code>,
+regardless of the file name extension).</p>
+<p>So even though Windows also does support using <code>/</code> as the path separator (unless
+the path is "canonical" - this rabbit hole goes deep!), the set of legal
+filesystem paths is just different.</p>
+<p><code>werk</code> ensures portability of your build scripts by introducing abstract paths,
+where:</p>
+<ul>
+<li>The path separator is always forward slash <code>/</code>.</li>
+<li>Paths can only contain valid UTF-8. Incomplete UTF-16 pairs on Windows, or
+abitrary byte sequences on Linux and macOS, will cause an error.</li>
+<li>File and directory names must be valid on all platforms, so creating
+<code>com¹.txt</code> on Linux or macOS will also fail.</li>
+<li>Paths are always relative to the workspace root (the directory containing
+<code>werk.toml</code>) or the output directory. Paths cannot refer to files outside of
+the workspace.</li>
+<li>Paths are unambiguous: <code>/foo/../bar.txt</code> will always be reliably resolved as
+<code>/bar.txt</code>.</li>
+<li>Any abstract path can be losslessly converted to a native OS filesystem path
+on all platforms.</li>
+</ul>
+<p>All input files and build artifacts are represented by an abstract path. Glob
+expressions produce a list of abstract paths.</p>
+<p>This is well and good, but <code>werk</code>'s main purpose is to execute other programs to
+produce artifacts. These programs expect native OS paths. This is solved during
+string interpolation, where there is a difference between <code>"{path}"</code> and
+<code>"&lt;path&gt;"</code>.</p>
+<ul>
+<li><code>"{path}"</code> will interpolate the abstract path as-is, verbatim.</li>
+<li><code>"&lt;path&gt;"</code> will interpret <code>path</code> as an abstract path, and convert it to an
+absolute native OS filesystem path within the workspace or the output
+directory, depending on whether it is generated by a recipe or exists in the
+workspace.</li>
+</ul>
+<h2 id="running-other-programs">Running other programs</h2>
+<p>Uniquely, <code>werk</code> does not pass commands through a native shell, like <code>sh</code> or
+PowerShell. Instead, <code>werk</code> spawns processes directly in code (using
+<code>tokio::process::Command</code>).</p>
+<p>I think this is a good idea because:</p>
+<ul>
+<li>POSIX-like shells are not available on Windows, so build scripts relying on
+them are not portable.</li>
+<li>Shell semantics differ wildly between platforms. For example, glob patterns
+are expanded by the shell on POSIX, but on Windows they are passed literally
+as an argument to the process, so the program must perform its own glob
+expansion.</li>
+<li>Constructing a command line invocation that results in the same command in all
+shells is incredibly error-prone. For example, if an argument contains spaces
+it must be quoted, and if it contains quotation marks, those must then be
+escaped, and what's the precise syntax for that?</li>
+<li>Handling <code>PATH</code> resolution in-process (instead of delegating to a shell) means
+we can track outdatedness.</li>
+</ul>
+<p>The drawback is that shell features, such as stdio piping, are not available.
+That's also kind of by design - again, piping works differently on different
+platforms. <code>werk</code> does not currently provide an alternative to piping between
+processes, but may do so in a future version.</p>
+<h2 id="depfiles">Depfiles</h2>
+<p>Many build tools and compilers understand and produce "depfiles", usually with
+the file extension <code>.d</code>. These are in the Makefile format, and are designed to
+be <code>@include</code>d in a <code>Makefile</code>.</p>
+<p><code>werk</code> has native support for parsing depfiles, including depfiles generated by
+build recipes, and automatically adds dependencies from depfiles to a target's
+dependencies if the <code>depfile</code> key is present in the recipe. (See the example
+above.)</p>
+<h2 id="controlling-side-effects-i-o-sandboxing">Controlling side effects: I/O sandboxing</h2>
+<p>Testing something like <code>werk</code> is challenging because there are fundamentally
+many moving parts, especially external programs and files on the hard drive.</p>
+<p>At the same time, the "dry run" mode is an essential feature, which also tries
+to guarantee that modifications to the filesystem do not occur.</p>
+<p><code>werk</code> allows switching out the interface to the "real" system, such that every
+side effect (writing files, spawning child processes) can be eliminated at
+runtime. This feature is used both by the <code>--dry-run</code> mode, but also to test all
+of the internal logic of <code>werk</code> without requiring filesystem access.</p>
+<blockquote class="info">
+<strong>Note:</strong> Side effects in <code>--dry-run</code> are considered bugs,
+but <code>werk</code> is alpha software and probably contains bugs.
+</blockquote>
+<h1 id="variables">Variables</h1>
+<p><code>werk</code> supports variables and expressions.</p>
+<ul>
+<li>Global variables are defined in the <code>[global]</code> section of <code>werk.toml</code>, and
+their values are available to all recipes. Additionally, their values can be
+overridden from the command line, using <code>werk --define key=value</code>.</li>
+<li>Recipe-local variables are defined in a recipe-local table, <code>vars</code>, and are
+evaluated before running any commands.</li>
+<li>Implicit variables while evaluating expressions.</li>
+</ul>
+<p>In the example above, <code>cc</code> and <code>ld</code> are global variables, and <code>ld</code> has the same
+value as <code>cc</code>.</p>
+<p>Please consult the <a href="https://github.com/simonask/werk/blob/main/README.md">README</a> for more details.</p>
+<h1 id="strings-interpolation">Strings &amp; Interpolation</h1>
+<p>Strings within <code>werk.toml</code> are interpreted according to a custom string
+interpolation DSL, loosely inspired by format strings in Rust.</p>
+<p>String interpolation is specially suited for shell commands. When building a
+command-line string, <code>werk</code> automatically handles quoting and whitespace in the
+way you might expect.</p>
+<p>One particular feature of string interpolation is path-sensitivity.</p>
+<ul>
+<li><code>"{var}"</code> interpolates the value of <code>var</code> verbatim.</li>
+<li><code>"&lt;var&gt;"</code> interprets <code>var</code> as an abstract file path, and converts it to an
+absolute native filesystem path.</li>
+<li>Both flavors can apply operations during interpolation, such as replacing a
+file extension: <code>"{var:.c=.o}"</code>.</li>
+<li>When a variable is a list (such as a list of input files), it can be expanded
+as <code>{var*}</code>, which will produce a string with each element of the list
+separated by a space. If <code>var</code> contains other lists, it will be expanded
+recursively (flat map).</li>
+<li>When an interpolation operation is present along with a list expansion, the
+operation is applied (recursively) to each element of the list. Example: <code>"&lt;var*:.c=.o&gt;"</code>.</li>
+</ul>
+<p>In string interpolations, some automatic variables are available, with mnemonics
+based on Make for convenience. For example, <code>"{%}"</code> interpolates the stem of the
+pattern that was matched in the current recipe, if any.</p>
+<p>Please consult the <a href="https://github.com/simonask/werk/blob/main/README.md">README</a> for more details.</p>
+<h1 id="expressions">Expressions</h1>
+<p>When a variable is a TOML table (inline or block-style), it will be interpreted
+as an expression, depending on the keys that are present in the table.
+Expressions may be composed, or derived from other variables.</p>
+<p>Expression evaluation tracks "outdatedness" as well. If a recipe uses a variable
+that is <em>derived from</em>, say, an environment variable that changed since the last
+run, the target is considered outdated.</p>
+<p>Examples of expressions:</p>
+<ul>
+<li><code>{ glob = "pattern", ... }</code>: Apply the glob pattern to the workspace and get a
+list of matching files.</li>
+<li><code>{ which = "program" }</code>: Determine the absolute native OS filesystem path to
+<code>program</code>.</li>
+<li><code>{ env = "NAME" }</code>: Read environment variable.</li>
+<li><code>{ shell = "command" }</code>: Run <code>command</code> and capture its output. Confusingly,
+this doesn't actually invoke the system's shell, just the program.</li>
+<li><code>{ ..., match = { 'foo' = "...", 'bar' = "..." } }</code>: Pattern-match against an
+input and conditionally evaluate the result.</li>
+<li><code>{ ..., patsubst = { pattern = "...", replacement = "..." } }</code>: Apply a
+pattern-substitution to the result of another expression.</li>
+</ul>
+<p>Please consult the <a href="https://github.com/simonask/werk/blob/main/README.md">README</a> for more details.</p>
+<h1 id="modes">Modes</h1>
+<p><code>werk</code> can be invoked in different modes to understand and diagnose what's
+happening.</p>
+<ul>
+<li><code>--dry-run</code>: Do not run any commands or write any files. Note that <code>--dry-run</code>
+impedes depfile support, because <code>werk</code> cannot build the depfiles, so
+dependencies found in those may be stale or nonexistent.</li>
+<li><code>--explain</code>: For every target being rebuilt, explain in the terminal why
+<code>werk</code> decided it was outdated. The explanation includes <em>all</em> reasons that a
+target was outdated, including cached information about the environment. This
+option tries very hard to be as user-friendly as possible, while still giving
+a full picture.</li>
+<li><code>--print-commands</code>: Print external command line invocations as they are being
+executed, or would have been executed in a dry-run.</li>
+</ul>
+<h1 id="final-remarks">Final Remarks</h1>
+<blockquote class="rainbow">
+<strong>Important:</strong>
+<code>werk</code> is an LGBTQIA+ program (yes, all of them). You can use it freely,
+except if you personally are homophobic, biphobic, transphobic, or support any politician
+or work for any organization that harms or opposes minority rights. Otherwise, we love
+you and support you. 💖
+</blockquote>
+<p>Implementing <code>werk</code> has been very fun. As you may have guessed, it's written in
+Rust, and it leans into async/await with Tokio for managing concurrency.</p>
+<p>I'm used to writing code where performance is a high priority, but for a tool
+that is kind of fundamentally "heavy", in the sense that its purpose is to
+invoke much more heavy-duty programs such as compilers, it doesn't make a lot of
+sense to spend time on shaving off those microseconds. Joyfully, Rust was still
+a very good choice here.</p>
+<p><strong>How was Rust helpful?</strong></p>
+<ul>
+<li>We're running things in parallel, and Rust ensures that there are no
+synchronization bugs or race conditions, period.</li>
+<li>We're invoking external commands, so controlling errors and failure modes is
+important. We don't want to abruptly kill a process just because one of its
+siblings failed.</li>
+</ul>
+<p>There's 3 uses of <code>unsafe</code> in the entire project, all trivial one-liners with
+guaranteed semantics (transparent reference casting), all related to converting
+between <code>werk_fs::Path</code> and <code>str</code>.</p>
+<p>Shout-out to the dependencies that made things significantly easier, and their
+authors: <code>which</code>, <code>globset</code>, <code>winnow</code>, <code>clap</code>, and not least, <code>tokio</code>.</p>
+
+
+<p class="tagsData">
+  
+</p>
+
+      </main>
+      <footer>
+          <hr>
+<div class="foot-container">
+  <div class="foot-left">
+    <p>License: <a target="_blank" rel="noopener noreferrer"
+        href="https://en.wikipedia.org/wiki/MIT_License">MIT</a><br>
+      Built with <a target="_blank" rel="noopener noreferrer" href="https://www.getzola.org">Zola</a>, theme based on <a
+        href="https://github.com/Speyll/anemone">anemone</a>.
+    </p>
+  </div>
+  
+</div>
+
+      </footer>
+    </div>
+</body>
+</html>
