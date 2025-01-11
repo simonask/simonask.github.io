@@ -448,6 +448,7 @@ blockquote.caution {
   border-color: var(--red-alert);
   border-width: 3px;
   padding: 1rem;
+  padding-top: 0.75rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
   margin-left: 2rem;
@@ -461,6 +462,7 @@ blockquote.info {
   border-color: var(--yellow);
   border-width: 3px;
   padding: 1rem;
+  padding-top: 0.75rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
   margin-left: 2rem;
@@ -503,6 +505,7 @@ blockquote.rainbow {
   background-clip: padding-box, border-box;
   border-width: 3px;
   padding: 1rem;
+  padding-top: 0.75rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
   margin-left: 2rem;
