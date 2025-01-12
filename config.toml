@@ -17,11 +17,11 @@ extra_syntaxes_and_themes = ["syntaxes"]
 
 [extra]
 # Put all your custom variables here
-default_theme = "dark"
+default_theme = "light"
 default_language = "en"
 # accent_color = "pink"
 # background_color = "dark"
-title = "rådden blog"
+title = "simonask's blog"
 author = "Simon Ask Ulsnes"
 copyright = "Simon Ask Ulsnes"
 toc = true
