@@ -5,29 +5,29 @@
 
 {% if page.toc and page.extra.toc %}
 <h2>Table of contents</h2>
-<ul>
+<ol>
 {% for h1 in page.toc %}
   <li>
   <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
   {% if h1.children %}
-    <ul>
+    <ol>
       {% for h2 in h1.children %}
         <li>
         <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
-          <ul>
+          <ol>
           {% for h3 in h2.children %}
             <li>
             <a href="{{ h3.permalink | safe }}">{{ h3.title }}</a>
             </li>
           {% endfor %}
-          </ul>
+          </ol>
         </li>
       {% endfor %}
-    </ul>
+    </ol>
   {% endif %}
   </li>
 {% endfor %}
-</ul>
+</ol>
 {% endif %}
 
 {{ page.content | safe }}

@@ -1,5 +1,5 @@
 :root.light {
-  --bgColor: #EEEEEE;
+  --bgColor: #fcfcfc;
   --fgColor: #41474E;
   --primary: #ee6890;
   --secondary: #67ba49;
@@ -166,8 +166,8 @@ a:hover {
   text-decoration: underline;
 }
 
-ul {
-  list-style: none;
+ul, ol {
+  /* list-style: none; */
   margin-top: .5rem;
   margin-bottom: .5rem;
 }
@@ -176,13 +176,8 @@ li {
   margin-bottom: .5rem;
 }
 
-ul li::marker {
-  content: '»  ';
+ul li::marker, ol li::marker {
   color: var(--primary)
-}
-
-ol li::marker {
-  color: var(--primary);
 }
 
 blockquote {
@@ -485,7 +480,7 @@ blockquote.rainbow {
   border-style: solid;
   border-color: transparent;
   border-radius: 1rem;
-  background-image: 
+  background-image:
                     /* linear-gradient(var(--bgColor), var(--bgColor)), */
                     linear-gradient(-135deg,
                       var(--step1-bg) 0%,
