@@ -54,8 +54,7 @@ Here's an incomplete list of problems I have with `make`:
 
 - I want to use file names and paths that contain spaces.
 - I want build rules and "housekeeping" workflows to not interact in surprising
-  and bad ways *([he's a big fat
-  `.PHONY`](https://www.youtube.com/watch?v=ToQVoyWWluQ))*.
+  and bad ways *([`.PHONY`](https://www.youtube.com/watch?v=ToQVoyWWluQ))*.
 - I want to work natively on Windows, as well as Linux and macOS. You can get
   GNU Make to sort of work using layers of emulation, but fundamentally it's a
   bad experience. Specifically, Makefiles typically rely on the presence of
