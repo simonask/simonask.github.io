@@ -13,3 +13,7 @@ C++.
 * [werk](https://github.com/simonask/werk), a simplistic command runner and build system.
 * [libyaml-safer](https://crates.io/crates/libyaml-safer), a port of libyaml to safe and idiomatic Rust.
 
+## Social
+
+* [Github](https://github.com/simonask)
+* [BlueSky](https://bsky.app/profile/simonask.bsky.social)
