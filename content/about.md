@@ -3,9 +3,16 @@ title = "About"
 date = "2024-02-06"
 +++
 
-Simon Ask Ulsnes is a Rust developer, a musician, and a half educated charlatan
-with a dark and mysterious past as a senior software engineer primarily using
-C++.
+<div style="display: inline-block;">
+<img
+    src="https://avatars.githubusercontent.com/simonask"
+    style="width: 200px; height: 200px; float: left; margin-right: 1rem;"
+    title="My face"
+/>
+Simon is a programmer, a musician, and a half educated charlatan
+with a dark and mysterious past as a senior C++ software engineer.
+</div>
+
 
 ## Projects / Crates
 
@@ -17,3 +24,4 @@ C++.
 
 * [Github](https://github.com/simonask)
 * [BlueSky](https://bsky.app/profile/simonask.bsky.social)
+
