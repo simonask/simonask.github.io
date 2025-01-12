@@ -30,11 +30,17 @@ header_nav = [
     { url = "/", name_en = "blog" },
     { url = "/about", name_en = "about" },
     { url = "https://github.com/simonask", name_en = "github" },
+    { url = "https://bsky.app/profile/simonask.bsky.social", name_en = "bsky" },
 ]
 
 [[extra.menu_items]]
 name = "github"
 url = "https://github.com/simonask"
+newtab = true
+
+[[extra.menu_items]]
+name = "bsky"
+url = "https://bsky.app/profile/simonask.bsky.social"
 newtab = true
 
 [[taxonomies]]
