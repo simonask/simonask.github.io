@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="robots" content="index, follow">
+
+
+
+
+
+
+
+
+
+
+
+
+<title>Introducing Werk</title>
+
+
+
+<meta name="title" content="Introducing Werk">
+
+
+<meta name="author" content="Simon Ask Ulsnes">
+
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://simonask.github.io/introducing-werk/">
+
+<meta property="og:site_name" content="">
+
+
+<meta property="og:title" content="Introducing Werk">
+
+
+
+
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://simonask.github.io/introducing-werk/">
+
+<meta property="twitter:title" content="Introducing Werk">
+
+
+
+
+<link rel="canonical" href="https://simonask.github.io/introducing-werk/">
+
+
+
+
+<link rel="stylesheet" href="https://simonask.github.io/css/style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+<script src="https://simonask.github.io/js/script.js" defer></script>
+
+</head>
+<body>
+    <div class="wrapper">
+      <header>
+          
+
+  
+
+
+  <nav class="navBar">
+    
+      <a href="&#x2F;" class="">
+        
+        blog
+      </a>
+    
+      <a href="&#x2F;about" class="">
+        
+        about
+      </a>
+    
+      <a href="https:&#x2F;&#x2F;github.com&#x2F;simonask" class="">
+        
+        github
+      </a>
+    
+      <a href="https:&#x2F;&#x2F;bsky.app&#x2F;profile&#x2F;simonask.bsky.social" class="">
+        
+        bsky
+      </a>
+    
+
+  <div class="themeSwitch">
+    
+    <button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"> <use href="https://simonask.github.io/icons.svg#lightMode"></use></svg></button>
+    <button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href="https://simonask.github.io/icons.svg#darkMode"></use></svg></button>
+
+    
+  </div>
+</nav>
+
+
+      </header>
+      <main>
+          
+<span class="metaData">
+  
+  <address rel="author">Simon Ask Ulsnes</address>,
+  
+  <time datetime="2025-01-11">2025-01-11</time>
+</span>
+<hr />
+
+
+<p class="toc">
+  <strong>Table of contents</strong>
+<ol>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#introducing-werk-nail-care">Introducing Werk 💅</a>
+    
+    <ol>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#just-immediately-why">Just immediately, Why?!</a>
+        <ol>
+          
+          <li>
+            <a href="https://simonask.github.io/introducing-werk/#why-not-make">Why not Make?</a>
+          </li>
+          
+          <li>
+            <a href="https://simonask.github.io/introducing-werk/#why-not-just">Why not just?</a>
+          </li>
+          
+          <li>
+            <a href="https://simonask.github.io/introducing-werk/#why-not-toolname">Why not $toolname?</a>
+          </li>
+          
+        </ol>
+      </li>
+      
+    </ol>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#overview">Overview</a>
+    
+    <ol>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#example-building-c-program">Example building C program</a>
+        <ol>
+          
+        </ol>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#example-building-a-rust-project-with-cargo">Example building a Rust project with Cargo</a>
+        <ol>
+          
+        </ol>
+      </li>
+      
+    </ol>
+    
+  </li>
+  
+  <li>
+    <a href="https://simonask.github.io/introducing-werk/#remarks">Remarks</a>
+    
+    <ol>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#in-defense-of-getting-sidetracked">In defense of getting sidetracked</a>
+        <ol>
+          
+        </ol>
+      </li>
+      
+      <li>
+        <a href="https://simonask.github.io/introducing-werk/#rust">Rust</a>
+        <ol>
+          
+        </ol>
+      </li>
+      
+    </ol>
+    
+  </li>
+  
+</ol>
+</p>
+<hr />
+
+
+<h1 id="introducing-werk-nail-care">Introducing Werk 💅</h1>
+<p><a href="https://github.com/simonask/werk">I made a thing.</a></p>
+<p><code>werk</code> is a simplistic build system, similar to <code>make</code>, and a command runner,
+similar to <code>just</code>. It tries to be very easy to use, and religiously portable.</p>
+<p>This is a general overview. For a more detailed explanation of syntax and
+behavior, please consult the project's <a href="https://github.com/simonask/werk/blob/main/README.md">README</a>.</p>
+<p>The source code for <code>werk</code> is <a href="https://github.com/simonask/werk">available on GitHub</a>.</p>
+<p>Check out <a href="https://simonask.github.io/werk">the book</a> and <a href="https://github.com/simonask/werk/tree/main/examples">the
+examples</a>.</p>
+<blockquote class="caution">
+<strong>Caution:</strong>
+<code>werk</code> is alpha software. Features may be buggy or missing. It may
+eat your code. Use at your own risk. Commit everything before trying it out. Consider
+trying it out in a virtual machine first. Don't blame me if you didn't.
+</blockquote>
+<h2 id="just-immediately-why">Just immediately, Why?!</h2>
+<p>The motivation for <code>werk</code> is that <code>make</code> is annoying. Make is a very
+sophisticated tool that solves a bunch of problems I don't have, and doesn't
+solve many problems that I <em>do</em> have.</p>
+<p>My personal use case - highly specific, but far from unique:</p>
+<ul>
+<li>I'm building a video game. Video games have a complex build process, because
+they contain both code and assets.</li>
+<li>Iteration speed is important.</li>
+<li>Some assets are code:
+<ul>
+<li>WASM plugins built by Cargo.</li>
+<li>Shaders built by <code>glslc</code> and <code>slangc</code>. Shader compilation is slow, so
+precise dependency tracking (depfiles) is important.</li>
+</ul>
+</li>
+<li>Native Windows support is a hard requirement.</li>
+<li>When it doesn't do what I want, I need to be able to understand why.</li>
+</ul>
+<h3 id="why-not-make">Why not Make?</h3>
+<p>Here's an incomplete list of problems I have with <code>make</code>:</p>
+<ul>
+<li>I want to use file names and paths that contain spaces.</li>
+<li>I want build rules and "housekeeping" workflows to not interact in surprising
+and bad ways <em>(<a href="https://www.youtube.com/watch?v=ToQVoyWWluQ"><code>.PHONY</code></a>)</em>.</li>
+<li>I want to work natively on Windows, as well as Linux and macOS. You can get
+GNU Make to sort of work using layers of emulation, but fundamentally it's a
+bad experience. Specifically, Makefiles typically rely on the presence of
+external POSIX utilities, like <code>sed</code>, <code>awk</code>, and so on, and all of these
+interact in undesirable ways with Windows filesystems.</li>
+<li>I want to put build artifacts in a separate directory.</li>
+<li>I want to use glob patterns in my build scripts (reliably), and I want them to
+be <code>.gitignore</code>-sensitive, like all the other tools we use.</li>
+<li>In general, file modification times are just insufficient in determining
+outdatedness.</li>
+<li>I want variables, lists, strings, and other things we expect of contemporary
+languages.</li>
+<li>I want to be able to diagnose my build process. The output of <code>make -d</code> is
+unreasonable.</li>
+</ul>
+<h3 id="why-not-just">Why not <code>just</code>?</h3>
+<p>Here's a 100% exhaustive list of problems I have with
+<a href="https://just.systems/man/en/"><code>just</code></a>:</p>
+<ul>
+<li>It can't build things, only run commands.</li>
+<li>When you do anything fancy you generally need a shell, making <code>Justfile</code>s
+non-portable.</li>
+<li>Other than that, it's great, seriously. Big fan.</li>
+</ul>
+<h3 id="why-not-toolname">Why not $toolname?</h3>
+<p>Here's a loose collection of problems I have with other purportedly
+cross-platform tools:</p>
+<ul>
+<li><code>ninja</code>: Too low-level, not nice to write by hand, very specialized for C/C++.</li>
+<li><code>scons</code>: Very clunky in my opinion, annoying Python runtime dependency.</li>
+<li><code>rake</code>: Ruby straight up does not work on Windows.</li>
+<li><code>cargo xtask</code>: Only runs commands ("workflows"), similar to <code>just</code>.</li>
+<li><code>cargo script</code>: Solves a different problem.</li>
+<li><code>cmake</code>: I'm too traumatized already.</li>
+<li>All the Java tools (<code>gradle</code>, <code>maven</code>, <code>bazel</code>): I'm sorry, I can't.</li>
+</ul>
+<h1 id="overview">Overview</h1>
+<p><code>werk</code> parses a Werkfile containing recipes, determines what the user wants to
+build, what the dependencies are, and runs programs to rebuild any outdated
+build products in the right order.</p>
+<p>Consult <a href="https://simonask.github.io/werk">the book</a> for many, many more details.</p>
+<blockquote>
+<p><strong>Why a new language?</strong> I tried various things, including expression build
+rules declaratively in TOML. <code>werk</code> actually still supports this mode, mainly
+for testing. But it quickly becomes very unwieldy to express the kind of
+things you really want to express in build scripts.</p>
+<p>It sucks, I know, but I promise it's fairly pleasant and readable.</p>
+</blockquote>
+<h2 id="example-building-c-program">Example building C program</h2>
+<p>Here's a minimal Werkfile to build a C program. It showcases build recipes (with
+depfiles), command recipes ("workflows"), and various forms of string
+interpolation. See also <a href="https://simonask.github.io/werk/language.html">the language
+reference</a>.</p>
+<pre data-lang="werk" style="background-color:#2b303b;color:#6c7079;" class="language-werk "><code class="language-werk" data-lang="werk"><span style="color:#cd74e8;">let</span><span style="color:#abb2bf;"> cc = which </span><span style="color:#9acc76;">&quot;clang&quot;
+</span><span style="color:#cd74e8;">let</span><span style="color:#abb2bf;"> ld = cc
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;</span><span style="color:#db9d63;">%</span><span style="color:#9acc76;">.o&quot;</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">from </span><span style="color:#9acc76;">&quot;{%}.c&quot;
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">depfile </span><span style="color:#9acc76;">&quot;{%}.c.d&quot;
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">run </span><span style="color:#9acc76;">&quot;{cc} -c -o &lt;out&gt; &lt;in&gt;&quot;
+</span><span style="color:#abb2bf;">}
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;</span><span style="color:#db9d63;">%</span><span style="color:#9acc76;">.c.d&quot;</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">from </span><span style="color:#9acc76;">&quot;{%}.c&quot;
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">run </span><span style="color:#9acc76;">&quot;{cc} -MM -MT &lt;in&gt; -MF &lt;out&gt; &lt;in&gt;&quot;
+</span><span style="color:#abb2bf;">}
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;example{EXE_SUFFIX}&quot;</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">from</span><span style="color:#abb2bf;"> glob </span><span style="color:#9acc76;">&quot;*.c&quot; </span><span style="color:#adb7c9;">|</span><span style="color:#abb2bf;"> map </span><span style="color:#9acc76;">&quot;{:.c=.o}&quot;
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">run </span><span style="color:#9acc76;">&quot;{ld} &lt;in*&gt; -o &lt;out&gt;&quot;
+</span><span style="color:#abb2bf;">}
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">task build</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;example{EXE_SUFFIX}&quot;
+</span><span style="color:#abb2bf;">  info </span><span style="color:#9acc76;">&quot;Build complete!&quot;
+</span><span style="color:#abb2bf;">}
+</span></code></pre>
+<p><em>Example run:</em></p>
+<pre data-lang="text" style="background-color:#2b303b;color:#6c7079;" class="language-text "><code class="language-text" data-lang="text"><span style="color:#abb2bf;">$ werk build
+</span><span style="color:#abb2bf;">[ ok ] /foo.o
+</span><span style="color:#abb2bf;">[ ok ] /main.o
+</span><span style="color:#abb2bf;">[ ok ] /example.exe
+</span><span style="color:#abb2bf;">[ ok ] build
+</span><span style="color:#abb2bf;">[info] Build complete!
+</span></code></pre>
+<h2 id="example-building-a-rust-project-with-cargo">Example building a Rust project with Cargo</h2>
+<pre data-lang="werk" style="background-color:#2b303b;color:#6c7079;" class="language-werk "><code class="language-werk" data-lang="werk"><span style="color:#cd74e8;">let</span><span style="color:#abb2bf;"> cargo = which </span><span style="color:#9acc76;">&quot;cargo&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;debug/my-program{EXE_SUFFIX}&quot;</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="font-style:italic;color:#5f697a;"># Werk understands depfiles emitted by Cargo
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">depfile </span><span style="color:#9acc76;">&quot;debug/my-program.d&quot;
+</span><span style="color:#abb2bf;">
+</span><span style="color:#abb2bf;">  </span><span style="font-style:italic;color:#5f697a;"># This will only run if any of the source files discovered by Cargo
+</span><span style="color:#abb2bf;">  </span><span style="font-style:italic;color:#5f697a;"># have changed since the last run.
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">run </span><span style="color:#9acc76;">&quot;{cargo} --profile=dev -p my-program&quot;
+</span><span style="color:#abb2bf;">}
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">task</span><span style="color:#abb2bf;"> clean {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">run </span><span style="color:#9acc76;">&quot;{cargo} clean&quot;
+</span><span style="color:#abb2bf;">}
+</span><span style="color:#abb2bf;">
+</span><span style="color:#cd74e8;">task build</span><span style="color:#abb2bf;"> {
+</span><span style="color:#abb2bf;">  </span><span style="color:#cd74e8;">build </span><span style="color:#9acc76;">&quot;debug/my-program{EXE_SUFFIX}&quot;
+</span><span style="color:#abb2bf;">}
+</span></code></pre>
+<p><em>Example run:</em></p>
+<pre data-lang="text" style="background-color:#2b303b;color:#6c7079;" class="language-text "><code class="language-text" data-lang="text"><span style="color:#abb2bf;">$ werk build
+</span><span style="color:#abb2bf;">[ ok ] /debug/my-program.exe
+</span><span style="color:#abb2bf;">[ ok ] build
+</span></code></pre>
+<h1 id="remarks">Remarks</h1>
+<p><code>werk</code> is a side project. Contributions are welcome, but ultimately it is
+designed to address my personal use cases. If you believe it should also address
+your use case, please feel free to get in touch.</p>
+<h2 id="in-defense-of-getting-sidetracked">In defense of getting sidetracked</h2>
+<p>Did I <em>have</em> to make <code>werk</code>? Not really. I could have made GNU Make work for my
+purposes. In fact, I did for a long time. On top of that, I'm trying to deliver
+a video game, one of the notoriously hardest thing to actually finish.</p>
+<p>The most challenging thing about finishing a video game as a solo developer is
+to stay motivated. There are many problems that are hard to solve, and that's a
+big part of the fun, but it's also a constant pull on my creativity. That's both
+exciting and incredibly draining.</p>
+<p>Toughing it out and powering through does not work. What works is to take a
+break, step away from the trenches, and let the creative juices stew in the
+background for a while.</p>
+<p>Doing little side projects that feel useful - and hopefully contribute a bit to
+the broader ecosystem - is a distraction, but it's also a way to stay healthy
+and productive, and combats the feeling of isolation.</p>
+<h2 id="rust">Rust</h2>
+<p>As you may have guessed, <code>werk</code> is written in Rust, and it leans into
+async/await for managing concurrency. It's no secret that Rust is my current
+favorite language, and I use it for almost everything. I want to share why.</p>
+<p><strong>How was Rust helpful?</strong></p>
+<ul>
+<li>We're running things in parallel, and Rust ensures that there are no
+synchronization bugs or race conditions, period.</li>
+<li>We're invoking external commands, so controlling errors and failure modes is
+important. We don't want to abruptly kill a process just because one of its
+siblings failed.</li>
+</ul>
+<p>There's a couple of uses of <code>unsafe</code> in the entire project, all trivial
+one-liners with guaranteed semantics (transparent reference casting), mostly
+related to converting between <code>werk_fs::Path</code> and <code>str</code>.</p>
+<p>Shout-out to the dependencies that made things significantly easier, and their
+authors: <code>which</code>, <code>globset</code>, <code>winnow</code>, <code>clap</code>, and <code>smol</code>.</p>
+
+
+<p class="tagsData">
+  
+</p>
+
+      </main>
+      <footer>
+          <hr>
+<div class="foot-container">
+  <div class="foot-left">
+    <p>License: <a target="_blank" rel="noopener noreferrer"
+        href="https://en.wikipedia.org/wiki/MIT_License">MIT</a><br>
+      Built with <a target="_blank" rel="noopener noreferrer" href="https://www.getzola.org">Zola</a>, theme based on <a
+        href="https://github.com/Speyll/anemone">anemone</a>.
+    </p>
+  </div>
+  
+</div>
+
+      </footer>
+    </div>
+</body>
+</html>
