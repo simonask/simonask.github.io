@@ -20,7 +20,8 @@ behavior, please consult the project's [README][].
 
 The source code for `werk` is [available on GitHub](https://github.com/simonask/werk).
 
-Check out [the examples](https://github.com/simonask/werk/tree/main/examples).
+Check out [the book](https://simonask.github.io/werk) and [the
+examples](https://github.com/simonask/werk/tree/main/examples).
 
 <blockquote class="caution">
 <strong>Caution:</strong>
@@ -100,9 +101,7 @@ Overview
 build, what the dependencies are, and runs programs to rebuild any outdated
 build products in the right order.
 
-Consult [the
-documentation](https://github.com/simonask/werk/tree/main/documentation) for
-many, many more details.
+Consult [the book](https://simonask.github.io/werk) for many, many more details.
 
 > **Why a new language?** I tried various things, including expression build
 > rules declaratively in TOML. `werk` actually still supports this mode, mainly
@@ -117,7 +116,7 @@ Example building C program
 Here's a minimal Werkfile to build a C program. It showcases build recipes (with
 depfiles), command recipes ("workflows"), and various forms of string
 interpolation. See also [the language
-reference](https://github.com/simonask/werk/blob/main/documentation/language.md).
+reference](https://simonask.github.io/werk/language.html).
 
 ```werk
 let cc = which "clang"
