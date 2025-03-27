@@ -16,9 +16,13 @@ with a dark and mysterious past as a senior C++ software engineer.
 
 ## Projects / Crates
 
-* [glamour](https://crates.io/crates/glamour), a type-safe vector math wrapper around [glam](https://crates.io/crates/glam).
+* [glamour](https://crates.io/crates/glamour), a type-safe vector math wrapper
+  around [glam](https://crates.io/crates/glam).
 * [werk](https://github.com/simonask/werk), a simplistic command runner and build system.
-* [libyaml-safer](https://crates.io/crates/libyaml-safer), a port of libyaml to safe and idiomatic Rust.
+* [stringleton](https://crates.io/crates/stringleton), a very fast string
+  interning solution.
+* [libyaml-safer](https://crates.io/crates/libyaml-safer), a port of libyaml to
+  safe and idiomatic Rust.
 
 ## Social
 
