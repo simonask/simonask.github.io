@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="robots" content="index, follow">
+
+
+
+
+
+
+
+
+
+
+
+
+<title>Introducing Stringleton</title>
+
+
+
+<meta name="title" content="Introducing Stringleton">
+
+
+<meta name="author" content="Simon Ask Ulsnes">
+
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://simonask.github.io/introducing-stringleton/">
+
+<meta property="og:site_name" content="">
+
+
+<meta property="og:title" content="Introducing Stringleton">
+
+
+
+
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://simonask.github.io/introducing-stringleton/">
+
+<meta property="twitter:title" content="Introducing Stringleton">
+
+
+
+
+<link rel="canonical" href="https://simonask.github.io/introducing-stringleton/">
+
+
+
+
+<link rel="stylesheet" href="https://simonask.github.io/css/style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+<script src="https://simonask.github.io/js/script.js" defer></script>
+
+</head>
+<body>
+    <div class="wrapper">
+      <header>
+          
+
+  
+
+
+  <nav class="navBar">
+    
+      <a href="&#x2F;" class="">
+        
+        blog
+      </a>
+    
+      <a href="&#x2F;about" class="">
+        
+        about
+      </a>
+    
+      <a href="https:&#x2F;&#x2F;github.com&#x2F;simonask" class="">
+        
+        github
+      </a>
+    
+      <a href="https:&#x2F;&#x2F;bsky.app&#x2F;profile&#x2F;simonask.bsky.social" class="">
+        
+        bsky
+      </a>
+    
+
+  <div class="themeSwitch">
+    
+    <button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"> <use href="https://simonask.github.io/icons.svg#lightMode"></use></svg></button>
+    <button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href="https://simonask.github.io/icons.svg#darkMode"></use></svg></button>
+
+    
+  </div>
+</nav>
+
+
+      </header>
+      <main>
+          
+<span class="metaData">
+  
+  <address rel="author">Simon Ask Ulsnes</address>,
+  
+  <time datetime="2025-03-27">2025-03-27</time>
+</span>
+<hr />
+
+
+
+<h1 id="introducing-stringleton">Introducing Stringleton</h1>
+<p><a href="https://docs.rs/stringleton/latest/stringleton/">Stringleton</a> is a very fast
+string interning library.</p>
+<p><em>String interning:</em> The technique of representing all strings which are equal by
+a pointer or ID that is unique to the <em>contents</em> of that strings, such that O(n)
+string equality check becomes a O(1) pointer equality check.</p>
+<p>The defining characteristic of Stringleton is <a href="https://docs.rs/stringleton/latest/stringleton/macro.sym.html">the <code>sym!(...)</code>
+macro</a>. It allows
+the creation of interned strings (symbols) from literals in the code with
+practically zero overhead.</p>
+<h2 id="the-current-state-of-things">The current state of things</h2>
+<p>Normally, creating an interned string from a literal in code involves the
+following steps:</p>
+<ol>
+<li>Acquire a global lock on some symbol registry.</li>
+<li>Determine if the string is already present in the registry.</li>
+<li>If so, return the existing ID or pointer.</li>
+<li>Otherwise, allocate the backing storage for the symbol and insert it in the
+registry.</li>
+</ol>
+<p>All of this means that creating symbols in code is something you don't want to
+do in inner loops, or you may want to avoid it if you are scared of "death by a
+thousand cuts". In particular, the need to acquire a global lock or other
+synchronization primitives every time is quite the impediment.</p>
+<h2 id="how-stringleton-does-it">How Stringleton does it</h2>
+<p>Instead, Stringleton uses a novel approach with some cooperation from the
+linker:</p>
+<ol>
+<li>Every call site of <code>sym!(...)</code> is statically registered at link time, using
+<code>linkme::distributed_slice</code>. This creates a small "symbol table" in the
+<code>.bss</code> section of the resulting binary.</li>
+<li>When the process starts, all entries in the symbol table are "reconciled",
+effectively performing steps 2 through 4 of the above (using the <code>ctor</code>
+crate).</li>
+<li>When actually reaching the <code>sym!(...)</code> call site, it compiles into a single
+memory load.</li>
+</ol>
+<p>The real kicker here is that the memory load at the call site <em>does not even
+need to be atomic.</em> The reason this is safe and sound is that static initializer
+functions (<code>ctor</code>) are guaranteed to execute before <code>main()</code>, and therefore
+before any threads can possibly have started. In other words, by the time
+<code>main()</code> starts executing, the symbol table is already fully initialized, and it
+is never modified again in the lifetime of the process.</p>
+<p>The caveat is, of course, that using <code>sym!(...)</code> in another static initializer
+function is <em>not</em> safe.</p>
+<h3 id="generated-code">Generated code</h3>
+<p>Consider this function:</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#6c7079;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#cd74e8;">fn </span><span style="color:#5cb3fa;">get_symbol</span><span style="color:#abb2bf;">() -&gt; Symbol {
+</span><span style="color:#abb2bf;">    sym!(</span><span style="color:#9acc76;">&quot;Hello, World!&quot;</span><span style="color:#abb2bf;">)
+</span><span style="color:#abb2bf;">}
+</span></code></pre>
+<p>This compiles into a single load instruction. Using <code>cargo disasm</code> on x86-64
+(Linux):</p>
+<pre data-lang="asm" style="background-color:#2b303b;color:#6c7079;" class="language-asm "><code class="language-asm" data-lang="asm"><span style="color:#5cb3fa;">get_symbol:
+</span><span style="color:#5cb3fa;">  8bf0    </span><span style="color:#cd74e8;">mov  </span><span style="color:#eb6772;">rax</span><span style="color:#abb2bf;">, </span><span style="color:#5ebfcc;">qword ptr </span><span style="color:#abb2bf;">[</span><span style="color:#eb6772;">rip </span><span style="color:#abb2bf;">+ </span><span style="color:#db9d63;">0x52471</span><span style="color:#abb2bf;">]
+</span><span style="color:#5cb3fa;">  8bf7    </span><span style="color:#cd74e8;">ret
+</span></code></pre>
+<p>For the uninitiated, that's a plain non-atomic memory load. Most notably, there
+are no function calls or locks acquired.</p>
+<h2 id="life-before-main-a-diatribe">Life before <code>main()</code>, a diatribe</h2>
+<p>The general assumption in Rust is that nothing happens before <code>main()</code>. This
+isn't actually true, and it's worth considering what the nature is of that
+assumption.</p>
+<p>Static initializer functions (or static constructors) fall in a weird kind of
+grey area when it comes to safety. The big question is: <em>Is safe code in
+<code>main()</code> allowed to rely on the invariant that static initializers have run
+before <code>main()</code>?</em></p>
+<p>The answer currently seems to be a resounding maybe. It would be a useful rule,
+as this crate demonstrates, but at the same time, static constructors is a
+linker feature that may not be guaranteed to exist everywhere. In C, they
+require nonstandard attributes. In C++ they are guaranteed to execute before
+<code>main()</code>, but esoteric configurations may forbid it.</p>
+<p>Multiple things in the standard library do not work <em>inside</em> static
+constructors, but some things do: <code>alloc</code> and atomic synchronization primitives
+like <code>OnceLock</code>. It is unclear whether the things that don't work are guaranteed
+to always fail in safe ways.</p>
+<p>All <code>#[ctor]</code> static initializer functions should be fundamentally considered
+<code>unsafe</code>, but not in the normal sense, because it isn't about the function's
+preconditions (the function itself may be perfectly safe), but rather about
+whether the function relies on the implicit precondition that static
+initializers have run. In other words, the semantics are inverted: The function
+may be unsafe to call in a static initializer, even though it only invokes safe
+APIs, because those safe APIs may rely on other static initializers having
+finished.</p>
+<p>In effect, the "unsafe" part of a static initializer function is the fact that
+it is being called before <code>main()</code>, and that any function may rely on static
+initializers having actually completed.</p>
+<p>Before Edition 2024, Rust had no way of expressing this inversion, but now we
+have "unsafe attributes". An example of this is <code>no_mangle</code>, which is now
+spelled <code>#[unsafe(no_mangle)]</code>. The reason it matters for <code>no_mangle</code> is that
+defining a global symbol with a particular name may shadow other symbols with
+the same name (on some platforms). It can effectively override some arbitrary
+function, given the right linker flags, and that is deeply unsafe for obvious
+reasons. On Linux and macOS, there are even official ways to do this: The
+<code>LD_PRELOAD</code> environment variable explicitly allows overriding symbols from an
+executable with symbols from a dynamic library, which is another example of a
+thing that "happens before <code>main()</code>".</p>
+<p>The <code>ctor</code> crate does not yet require <code>#[unsafe(ctor)]</code>, but it <a href="https://github.com/mmastrac/rust-ctor/issues/159">hopefully
+will</a>.</p>
+
+
+<p class="tagsData">
+  
+</p>
+
+      </main>
+      <footer>
+          <hr>
+<div class="foot-container">
+  <div class="foot-left">
+    <p>License: <a target="_blank" rel="noopener noreferrer"
+        href="https://en.wikipedia.org/wiki/MIT_License">MIT</a><br>
+      Built with <a target="_blank" rel="noopener noreferrer" href="https://www.getzola.org">Zola</a>, theme based on <a
+        href="https://github.com/Speyll/anemone">anemone</a>.
+    </p>
+  </div>
+  
+</div>
+
+      </footer>
+    </div>
+</body>
+</html>

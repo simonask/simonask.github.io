@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://simonask.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://simonask.github.io/about/</loc>
+        <lastmod>2024-02-06</lastmod>
+    </url>
+    <url>
+        <loc>https://simonask.github.io/introducing-stringleton/</loc>
+        <lastmod>2025-03-27</lastmod>
+    </url>
+    <url>
+        <loc>https://simonask.github.io/introducing-werk/</loc>
+        <lastmod>2025-01-11</lastmod>
+    </url>
+    <url>
+        <loc>https://simonask.github.io/libyaml-safer/</loc>
+        <lastmod>2024-02-08</lastmod>
+    </url>
+    <url>
+        <loc>https://simonask.github.io/tags/</loc>
+    </url>
+</urlset>
